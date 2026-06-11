@@ -1,0 +1,3031 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Toolbook · 功能工具書</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='90' y1='0' x2='90' y2='180' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23313131'/%3E%3Cstop offset='1' stop-color='%23141414'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='32' fill='url(%23g)'/%3E%3Cg fill='%23fff'%3E%3Ccircle cx='42.32' cy='101.96' r='11.32'/%3E%3Ccircle cx='137.68' cy='78.47' r='11.32'/%3E%3Cpath d='M78.14 39.19h23.32L79.2 113.29H55.88z'/%3E%3Cpath d='M100.79 67.15h23.32l-22.26 74.1H78.53z'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   Claude Toolbook — 極簡白・書感（支援 Dark Mode）
+   ============================================================ */
+
+:root {
+  --bg: #fefdf9;
+  --bg-soft: #f6f5ee;
+  --ink: #2d2c27;
+  --ink-secondary: #7a7870;
+  --ink-tertiary: #aaa79b;
+  --line: #eae8de;
+  --accent: #0026FF;
+  --accent-soft: #e9edff;
+  --mcp: #7a5af5;
+  --mcp-soft: #f0ecfe;
+  --danger: #d70015;
+  --danger-soft: #fdf0f0;
+  --toast-bg: #1c1c1e;
+  --toast-ink: #ffffff;
+  /* 淺色模式：深炭色 footer 收尾 */
+  --footer-bg: #1d1c19;
+  --footer-ink: #fffce1;
+  --footer-sub: #a9a698;
+  --footer-meta: #807d70;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "PingFang TC", "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "New York", "Songti TC", "Noto Serif TC", Georgia, serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #222225;
+  --bg-soft: #2e2e33;
+  --ink: #fffce1;
+  --ink-secondary: #b8b6a8;
+  --ink-tertiary: #807e72;
+  --line: #3c3c42;
+  --accent: #3edc81;
+  --accent-soft: rgba(62, 220, 129, 0.13);
+  --mcp: #b59bfc;
+  --mcp-soft: rgba(181, 155, 252, 0.16);
+  --danger: #ff7a72;
+  --danger-soft: rgba(255, 122, 114, 0.14);
+  --toast-bg: #fffce1;
+  --toast-ink: #222225;
+  /* 深色模式：奶油黃 footer 收尾 */
+  --footer-bg: #fffce1;
+  --footer-ink: #111110;
+  --footer-sub: #5f5d54;
+  --footer-meta: #8d8a7c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+.page { max-width: 840px; margin: 0 auto; padding: 0 32px; }
+
+/* ====== 主題切換 ====== */
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 40;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: var(--ink-secondary);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 0.35s ease, border-color 0.35s ease, color 0.2s;
+}
+
+.theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+.theme-toggle svg { width: 17px; height: 17px; }
+
+/* ====== 迷你固定 Header（捲動時出現）====== */
+
+.mini {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--line);
+  opacity: 0;
+}
+
+.mini-inner {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.theme-toggle.in-mini {
+  position: static;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: transparent;
+  border-color: transparent;
+}
+.theme-toggle.in-mini:hover { border-color: var(--accent); }
+
+.mini-back {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--ink-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s;
+}
+
+.mini-back:hover { color: var(--accent); border-color: var(--accent); }
+.mini-back.is-visible { display: inline-flex; }
+
+.mini-title {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mini-title .header-title-accent { font-style: italic; color: var(--accent); }
+
+.mini-search {
+  flex: 1;
+  max-width: 360px;
+  margin-left: auto;
+  padding: 8px 16px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--ink);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  outline: none;
+  transition: border-color 0.18s, background 0.35s, box-shadow 0.18s;
+}
+
+.mini-search::placeholder { color: var(--ink-tertiary); }
+.mini-search:focus { background: var(--bg); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+@media (max-width: 600px) {
+  .mini-inner { padding: 8px 16px; gap: 8px; }
+  .mini-title { display: none; }
+}
+
+/* ====== Header ====== */
+
+.header { padding: 80px 0 36px; text-align: center; }
+
+/* ====== Logo ====== */
+
+.logo-mark { display: inline-block; }
+
+.logo-hero {
+  width: 40px;
+  height: auto;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.logo-mini {
+  width: 18px;
+  height: 16px;
+  margin-right: 7px;
+  vertical-align: -2px;
+  color: var(--ink);
+}
+
+.logo-footer {
+  width: 54px;
+  height: auto;
+  color: var(--footer-ink);
+  margin-bottom: -52px;   /* 抵銷 footer-inner 的大間距，與標語保持 36px */
+}
+
+.header-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 16px;
+}
+
+.header-title {
+  font-family: var(--font-serif);
+  font-size: clamp(46px, 9vw, 92px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+}
+
+/* 每行一個遮罩，逐字從遮罩下方升起；fit-content 讓底線只跟字一樣寬 */
+.header-title .word {
+  display: block;
+  width: fit-content;
+  overflow: hidden;
+  padding: 0.05em 0.1em;
+  margin: -0.03em auto;
+}
+
+.header-title .char { display: inline-block; will-change: transform; }
+
+/* 重點字：手寫書感的底線（字進場後從左劃到右） */
+.header-title .word.header-title-accent { position: relative; color: inherit; }
+
+.header-title .word.header-title-accent::after {
+  content: '';
+  position: absolute;
+  left: 0.1em; right: 0.1em;
+  bottom: 0.09em;
+  height: 0.038em;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+.header-title .word.header-title-accent.u-in::after { transform: scaleX(1); }
+
+/* 章節模式：標題換成章名，字級收斂一點（中文長章名才放得下） */
+.header-title.is-chapter {
+  font-size: clamp(36px, 7vw, 68px);
+  letter-spacing: 0;
+}
+
+.header-subtitle.is-off { display: none; }
+
+.header-subtitle {
+  margin: 16px auto 0;
+  max-width: 420px;
+  font-size: 15px;
+  color: var(--ink-secondary);
+}
+
+/* ====== Search ====== */
+
+.search-wrap { position: relative; max-width: 540px; margin: 32px auto 0; }
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--ink-tertiary);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 13px 48px 13px 46px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  outline: none;
+  transition: border-color 0.18s, background 0.35s, box-shadow 0.18s, color 0.35s;
+}
+
+.search-input::placeholder { color: var(--ink-tertiary); }
+
+.search-input:focus {
+  background: var(--bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.search-kbd {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 7px;
+}
+
+#view { touch-action: pan-y; }
+
+/* ====== 目錄 ====== */
+
+.toc { padding: 44px 0 24px; }
+.toc-part { margin-bottom: 40px; }
+
+.toc-part-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.toc-part-title .en {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+}
+
+.toc-part-desc { font-size: 13.5px; color: var(--ink-secondary); margin-bottom: 16px; }
+
+.toc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 4px;
+  font-family: inherit;
+  font-size: 15.5px;
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.toc-num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--ink-tertiary);
+  width: 34px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.toc-name { flex-shrink: 0; font-weight: 500; }
+.toc-row:hover .toc-name { color: var(--accent); }
+
+.toc-arrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.toc-row:hover .toc-arrow { opacity: 1; transform: translateX(0); }
+
+.toc-dots { flex: 1; border-bottom: 1.5px dotted var(--line); transform: translateY(-4px); }
+.toc-count { font-family: var(--font-mono); font-size: 13px; color: var(--ink-tertiary); flex-shrink: 0; }
+
+/* ====== 章節頁 ====== */
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 7px 16px;
+  cursor: pointer;
+  margin-bottom: 36px;
+  transition: color 0.18s, border-color 0.18s, background 0.35s;
+}
+
+.back-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.chapter { padding-top: 8px; }
+
+.chapter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 8px;
+}
+.chapter-bar .back-btn { margin-bottom: 0; }
+
+.chapter-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.chapter-count { font-family: var(--font-mono); font-size: 12px; color: var(--ink-tertiary); }
+
+/* ====== 編輯表單與貼上框 ====== */
+
+.edit-form {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-form input,
+.edit-form textarea,
+.paste-box {
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus,
+.paste-box:focus { border-color: var(--accent); }
+
+.paste-box {
+  width: 100%;
+  min-height: 170px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.remove-pill { color: var(--danger); }
+
+/* ====== 詞條（英文標題為主）====== */
+
+.entry { border-bottom: 1px solid var(--line); padding: 24px 0; cursor: pointer; }
+.entry:last-of-type { border-bottom: none; }
+
+.entry-head { display: flex; align-items: center; gap: 10px; }
+
+.entry-en-title {
+  font-family: var(--font-mono);
+  font-size: 18.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 0.2s;
+  word-break: break-all;
+}
+
+.entry:hover .entry-en-title { color: var(--accent); }
+
+.entry-type {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2.5px 9px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+.entry-type.skill { color: var(--accent); background: var(--accent-soft); }
+.entry-type.mcp { color: var(--mcp); background: var(--mcp-soft); }
+
+.entry-vendor {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--ink-secondary);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 2px 9px;
+  flex-shrink: 0;
+}
+
+/* 作用平台：出品方 ≠ 操作對象時顯示 */
+.entry-on {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mcp);
+  border: 1px dashed var(--mcp);
+  border-radius: 99px;
+  padding: 2px 9px;
+  flex-shrink: 0;
+}
+
+.entry-chevron {
+  margin-left: auto;
+  color: var(--ink-tertiary);
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.entry-zh-sub { margin-top: 6px; font-size: 15px; font-weight: 600; color: var(--ink); }
+
+.entry-desc {
+  margin-top: 7px;
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--ink-secondary);
+  max-width: 720px;
+}
+
+/* 展開區 */
+.entry-detail { height: 0; overflow: hidden; }
+
+.entry-detail-inner {
+  margin-top: 18px;
+  padding: 18px 20px;
+  background: var(--bg-soft);
+  border-radius: 14px;
+  display: grid;
+  gap: 16px;
+  transition: background 0.35s;
+}
+
+.detail-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 4px;
+}
+
+.detail-block p { font-size: 14px; line-height: 1.7; color: var(--ink-secondary); }
+
+.trigger-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.35s, color 0.2s, border-color 0.2s;
+}
+
+.trigger-pill:hover { border-color: var(--accent); color: var(--accent); }
+
+.entry-actions { display: flex; justify-content: flex-end; }
+
+.btn-ghost {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--ink-tertiary);
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.btn-ghost:hover { color: var(--danger); background: var(--danger-soft); }
+
+/* ====== 搜尋結果 / 無結果 ====== */
+
+.result-head {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.result-head .q { color: var(--accent); font-style: italic; }
+
+.empty { text-align: center; padding: 56px 0; color: var(--ink-tertiary); font-size: 14.5px; }
+
+/* ====== Footer（GSAP 風格：大色塊＋角落版權）====== */
+
+/* 深淺模式互為反差：淺色→深炭塊，深色→奶油黃塊 */
+.footer {
+  margin-top: 96px;
+  background: var(--footer-bg);
+  transition: background 0.35s ease;
+}
+
+.footer .footer-headline { color: var(--footer-ink); }
+.footer .footer-bottom { color: var(--footer-sub); }
+.footer .footer-meta { color: var(--footer-meta); }
+.footer button { color: var(--footer-sub); }
+
+.footer-inner {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 72px 32px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 88px;
+}
+
+.footer-headline {
+  font-family: var(--font-sans);
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  max-width: 520px;
+}
+
+.footer-headline .accent { color: inherit; font-style: normal; }
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+}
+
+.footer-meta { color: var(--ink-tertiary); }
+
+.footer button {
+  font-size: 12.5px;
+  color: var(--footer-sub);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  border-radius: 6px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+}
+
+.footer button:hover {
+  color: var(--footer-ink);
+  text-decoration-style: solid;
+}
+
+.footer button:active {
+  transform: scale(0.96);
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .footer-inner { padding: 48px 20px 28px; gap: 56px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+/* ====== Snackbar 通知 ====== */
+
+.snack-stack {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.snack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--toast-bg);
+  color: var(--toast-ink);
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 12px 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  pointer-events: auto;
+  max-width: min(92vw, 480px);
+}
+
+.snack-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #3edc81;
+  flex-shrink: 0;
+}
+.snack.is-error .snack-dot { background: #ff5f56; }
+
+.snack-code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.28);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.snack-close {
+  background: none; border: none; cursor: pointer;
+  color: inherit; opacity: 0.55;
+  font-size: 12px; line-height: 1;
+  padding: 3px 5px;
+  border-radius: 5px;
+}
+.snack-close:hover { opacity: 1; }
+
+@media (max-width: 600px) {
+  .header { padding: 64px 0 28px; }
+  .search-kbd { display: none; }
+  .theme-toggle { top: 14px; right: 14px; }
+}
+
+/* ====== Sync Modal ====== */
+
+.sync-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.38);
+  z-index: 60;
+  opacity: 0;
+}
+.sync-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(480px, calc(100vw - 40px));
+  max-height: min(520px, calc(100vh - 80px));
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+  z-index: 61;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+}
+
+/* display:flex 會蓋掉 hidden 屬性的 display:none，必須補回去，
+   否則關閉後的 modal 仍以透明狀態浮在畫面中央攔截點擊 */
+.sync-modal[hidden],
+.sync-backdrop[hidden] { display: none; }
+.sync-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.sync-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.sync-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-tertiary);
+  font-size: 15px; line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.sync-close:hover { color: var(--ink); background: var(--bg-soft); }
+.sync-body {
+  overflow-y: auto;
+  padding: 16px 20px 20px;
+  flex: 1;
+}
+.sync-loading {
+  color: var(--ink-secondary);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px 0;
+}
+.sync-ok {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--ink-secondary);
+  font-size: 14px;
+  padding: 20px 0;
+}
+.sync-ok-icon { font-size: 22px; }
+.sync-section { margin-bottom: 16px; }
+.sync-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-tertiary);
+  margin-bottom: 8px;
+}
+.sync-item {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.sync-item-row {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+}
+.sync-section-head {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 12px;
+  margin-bottom: 8px;
+}
+.sync-section-head .sync-section-title { margin-bottom: 0; }
+.sync-add {
+  font-size: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--ink);
+  border-radius: 99px;
+  padding: 3px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s, opacity 0.2s, transform 0.1s;
+}
+.sync-add:hover:not([disabled]) { color: var(--accent); border-color: var(--accent); }
+.sync-add:active:not([disabled]) { transform: scale(0.95); }
+.sync-add[disabled] { opacity: 0.45; cursor: default; }
+.sync-item:last-child { border-bottom: none; }
+.sync-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+.sync-item-desc {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+.sync-note {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  margin-top: 12px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: var(--bg-soft);
+  border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="切換深淺色模式">
+  <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <circle cx="12" cy="12" r="4.2"/>
+    <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4L19 19M19 5l-1.6 1.6M6.6 17.4L5 19"/>
+  </svg>
+  <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+    <path d="M20 13.5A8 8 0 0 1 10.5 4 8 8 0 1 0 20 13.5z"/>
+  </svg>
+</button>
+
+<div class="mini" id="mini">
+  <div class="mini-inner">
+    <button class="mini-back" id="miniBack" aria-label="回目錄" title="回目錄">←</button>
+    <div class="mini-title" id="miniTitle"><svg class="logo-mark logo-mini" viewBox="28 36 124 108" fill="currentColor" aria-hidden="true"><circle cx="42.32" cy="101.96" r="11.32"/><circle cx="137.68" cy="78.47" r="11.32"/><path d="M78.14 39.19H101.46L79.2 113.29H55.88L78.14 39.19Z"/><path d="M100.79 67.15H124.11L101.85 141.25H78.53L100.79 67.15Z"/></svg>Claude <span class="header-title-accent">Toolbook</span></div>
+    <input id="miniSearch" class="mini-search" type="search" placeholder="搜尋功能…" autocomplete="off">
+  </div>
+</div>
+
+<div class="page">
+
+  <header class="header">
+    <svg class="logo-mark logo-hero js-hero" viewBox="28 36 124 108" fill="currentColor" aria-label="Jean logo" role="img">
+      <circle cx="42.32" cy="101.96" r="11.32"/>
+      <circle cx="137.68" cy="78.47" r="11.32"/>
+      <path d="M78.14 39.19H101.46L79.2 113.29H55.88L78.14 39.19Z"/>
+      <path d="M100.79 67.15H124.11L101.85 141.25H78.53L100.79 67.15Z"/>
+    </svg>
+    <p class="header-eyebrow js-hero">A Field Guide to Your Tools</p>
+    <h1 class="header-title" id="heroTitle" aria-label="Claude Toolbook">
+      <span class="word">Claude</span>
+      <span class="word header-title-accent">Toolbook</span>
+    </h1>
+    <p class="header-subtitle js-hero">你的 Skills 與 MCP 功能工具書——不記得名稱沒關係，用「想做什麼」來查。</p>
+
+    <div class="search-wrap js-hero">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M14 14L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input id="search" class="search-input" type="search"
+             placeholder="搜尋功能：例如「簡報」「動畫」「合約」「PDF」…"
+             autocomplete="off">
+      <kbd class="search-kbd">/</kbd>
+    </div>
+  </header>
+
+  <div id="view"></div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <svg class="logo-mark logo-footer" viewBox="28 36 124 108" fill="currentColor" aria-label="Jean logo" role="img">
+      <circle cx="42.32" cy="101.96" r="11.32"/>
+      <circle cx="137.68" cy="78.47" r="11.32"/>
+      <path d="M78.14 39.19H101.46L79.2 113.29H55.88L78.14 39.19Z"/>
+      <path d="M100.79 67.15H124.11L101.85 141.25H78.53L100.79 67.15Z"/>
+    </svg>
+    <p class="footer-headline">Know your tools,<br>and the tools will <span class="accent">work for you</span>.</p>
+    <div class="footer-bottom">
+      <span>©2026 Jean-Designer Product. All rights reserved.</span>
+      <span class="footer-meta">
+        資料更新：2026-06-10
+        <button id="syncBtn">· 同步檢查</button>
+        <button id="exportBtn">· 匯出</button>
+        <button id="importBtn">· 匯入</button>
+        <button id="restore" hidden>· 已隱藏 <span id="hiddenCount">0</span> 項，全部復原</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="snack-stack" id="snackStack" aria-live="polite"></div>
+
+<!-- Sync Modal -->
+<div class="sync-backdrop" id="syncBackdrop" hidden></div>
+<div class="sync-modal" id="syncModal" hidden>
+  <div class="sync-header">
+    <span class="sync-title">同步檢查</span>
+    <button class="sync-close" id="syncClose" aria-label="關閉">✕</button>
+  </div>
+  <div class="sync-body" id="syncBody">
+    <p class="sync-loading">掃描中…</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<script>
+/* ============================================================
+   資料 — 每一條 = 一個功能
+   type: 'skill' | 'mcp'    cat: 對應 PARTS 裡的章節 key
+   ============================================================ */
+const DATA = [
+
+/* ════════ 上篇 Skills ════════ */
+
+/* ── 設計 ── */
+{ id:'impeccable', type:'skill', cat:'design', en:'impeccable', zh:'高質感前端生成',
+  zhDesc:'打造有設計品味、避開「AI 罐頭感」的網頁與元件。從版型、字體到互動細節都講究，適合 landing page、作品集、產品頁等需要質感的場景。',
+  enDesc:'Create distinctive, production-grade frontend interfaces with high design quality, avoiding generic AI aesthetics.',
+  trigger:'「做一個高質感的網頁／元件」' },
+{ id:'design-taste-frontend', type:'skill', cat:'design', en:'design-taste-frontend', zh:'反模板前端設計',
+  zhDesc:'「反 AI 罐頭」設計技能：讀懂需求後自行推斷正確的設計方向，產出不像模板的介面。重新設計（redesign）時會先做現況稽核再動手。',
+  enDesc:'Anti-slop frontend skill — infers the right design direction and ships interfaces that do not look templated.',
+  trigger:'「幫我重新設計這個頁面」' },
+{ id:'shape', type:'skill', cat:'design', en:'shape', zh:'設計前規劃訪談',
+  zhDesc:'寫 code 之前先做結構化的設計訪談，產出一份設計簡報（design brief）：方向、限制、策略。適合在新功能動工前先對齊。',
+  enDesc:'Plan UX/UI before writing code — runs a discovery interview and produces a design brief.',
+  trigger:'「我們先規劃一下這個功能的設計」' },
+{ id:'critique', type:'skill', cat:'design', en:'critique', zh:'設計評論',
+  zhDesc:'用 UX 視角評你的設計：視覺層級、資訊架構、情感共鳴、認知負荷，附量化評分與可執行的修改建議。會用 persona 模擬真實使用者走一遍。',
+  enDesc:'Evaluate a design from a UX perspective with quantitative scoring, persona-based testing, and actionable feedback.',
+  trigger:'「幫我評論／review 這個設計」' },
+{ id:'audit', type:'skill', cat:'design', en:'audit', zh:'技術品質審查',
+  zhDesc:'跑一輪技術健檢：無障礙、效能、主題、響應式、反模式，產出帶 P0–P3 嚴重度分級的報告與修復計畫。',
+  enDesc:'Technical quality checks across accessibility, performance, theming, and responsive design, with a scored report.',
+  trigger:'「幫這個頁面做技術稽核」' },
+{ id:'polish', type:'skill', cat:'design', en:'polish', zh:'出貨前打磨',
+  zhDesc:'上線前的最後一輪品質檢查：對齊、間距、一致性、微小細節。把「不錯」磨成「很好」，適合在功能完成後跑一次。',
+  enDesc:'Final quality pass fixing alignment, spacing, consistency, and micro-detail issues before shipping.',
+  trigger:'「幫我做最後的 polish」' },
+{ id:'layout', type:'skill', cat:'design', en:'layout', zh:'版面與節奏',
+  zhDesc:'修版面問題：單調的網格、不一致的間距、薄弱的視覺層級。讓畫面有composition、有呼吸感。',
+  enDesc:'Improve layout, spacing, and visual rhythm — fixes monotonous grids and weak hierarchy.',
+  trigger:'「版面怪怪的／間距有問題」' },
+{ id:'typeset', type:'skill', cat:'design', en:'typeset', zh:'字體排印',
+  zhDesc:'改善字體選擇、層級、大小、字重與可讀性，讓文字看起來是「有意為之」而不是預設值。',
+  enDesc:'Improve typography — font choices, hierarchy, sizing, weight, and readability.',
+  trigger:'「字體／文字層級看起來不對」' },
+{ id:'colorize', type:'skill', cat:'design', en:'colorize', zh:'策略性配色',
+  zhDesc:'幫太灰、太單調的介面加上有策略的色彩，讓畫面更有表情、更吸引人，但不會變成調色盤爆炸。',
+  enDesc:'Add strategic color to monochromatic interfaces, making them more engaging and expressive.',
+  trigger:'「畫面太灰了，幫我加點顏色」' },
+{ id:'bolder', type:'skill', cat:'design', en:'bolder', zh:'加強視覺張力',
+  zhDesc:'把太安全、太無聊的設計放大膽：加強對比與個性、提高視覺衝擊，同時維持可用性。',
+  enDesc:'Amplify safe or boring designs — more visual impact and character while maintaining usability.',
+  trigger:'「設計太平淡，要更有個性」' },
+{ id:'quieter', type:'skill', cat:'design', en:'quieter', zh:'降噪調和',
+  zhDesc:'bolder 的反向：把太吵、太刺激、太用力的設計調回優雅安靜，降低強度但保留品質。',
+  enDesc:'Tone down visually aggressive designs — calmer and more refined while preserving quality.',
+  trigger:'「太花了／太吵了，幫我收斂」' },
+{ id:'distill', type:'skill', cat:'design', en:'distill', zh:'精簡提純',
+  zhDesc:'把設計剝到本質：移除不必要的複雜度與雜訊。好設計是簡單、有力、乾淨的。',
+  enDesc:'Strip designs to their essence by removing unnecessary complexity and noise.',
+  trigger:'「幫我簡化／decluter 這個 UI」' },
+{ id:'delight', type:'skill', cat:'design', en:'delight', zh:'增加驚喜感',
+  zhDesc:'加入讓人會心一笑的小巧思：個性、微互動、意料之外的細節，把「功能性」變成「令人記得」。',
+  enDesc:'Add moments of joy, personality, and unexpected touches that make interfaces memorable.',
+  trigger:'「讓這個介面更有趣／更好玩」' },
+{ id:'clarify', type:'skill', cat:'design', en:'clarify', zh:'UX 文案優化',
+  zhDesc:'改善看不懂的介面文字：錯誤訊息、按鈕標籤、說明文字。讓使用者一眼就知道發生什麼、該做什麼。',
+  enDesc:'Improve unclear UX copy, error messages, microcopy, and labels.',
+  trigger:'「這段文案／錯誤訊息很難懂」' },
+{ id:'adapt', type:'skill', cat:'design', en:'adapt', zh:'響應式適配',
+  zhDesc:'讓設計在不同螢幕、裝置、平台上都好用：斷點、流動版型、觸控目標大小。',
+  enDesc:'Adapt designs across screen sizes and devices — breakpoints, fluid layouts, touch targets.',
+  trigger:'「手機版跑版了／要做 RWD」' },
+{ id:'apply-design-system', type:'skill', cat:'design', en:'apply-design-system', zh:'套用設計系統', on:'Figma',
+  zhDesc:'檢查既有設計並把它接上設計系統的元件，讓散落的自製樣式回歸統一規範。',
+  enDesc:'Review an existing design and connect it to design system components.',
+  trigger:'「把這頁接上我們的設計系統」' },
+{ id:'audit-design-system', type:'skill', cat:'design', en:'audit-design-system', zh:'設計系統稽核', on:'Figma',
+  zhDesc:'稽核 Figma 畫面或元件的設計系統整合漂移：缺共用元件、local override、未綁定的 token。',
+  enDesc:'Audit a Figma screen for design-system drift — missing shared components, overrides, unbound tokens.',
+  gain:'抓出檔案裡「看起來一樣其實是手刻」的元件與漂移的顏色，避免設計系統慢慢爛掉。',
+  trigger:'「檢查這個 Figma 有沒有偏離設計系統」' },
+{ id:'fix-design-system-finding', type:'skill', cat:'design', en:'fix-design-system-finding', zh:'修復設計系統問題', on:'Figma',
+  zhDesc:'針對稽核找到的單一設計系統問題進行修復——補上共用元件、移除 override、綁回 token。',
+  enDesc:'Fix a specific design-system integration finding in a Figma screen or component.',
+  trigger:'「修掉這個設計系統的問題」' },
+{ id:'lightbright-docs-grid', type:'skill', cat:'design', en:'lightbright-docs-grid', zh:'Figma 文件網格整理', on:'Figma',
+  zhDesc:'把雜亂的 Figma 元件／icon 文件頁整理成一致的 section + 卡片網格，像「Icon 24」那種文件風格。',
+  enDesc:'Organize Figma component/icon documentation pages into a consistent section + card grid.',
+  trigger:'「整理這頁 component／排得跟 Icon 24 一樣」' },
+{ id:'jean-design-style', type:'skill', cat:'design', en:'jean-design-style', zh:'Jean 設計風格（個人）',
+  zhDesc:'你的個人風格參考技能：任何視覺設計產出前都會先讀它，確保成果符合你偏好的方向。',
+  enDesc:'Personal style reference — loaded before any visual design output to match Jean’s preferred direction.',
+  trigger:'做任何視覺設計時自動觸發' },
+{ id:'jean-frontend-workflow', type:'skill', cat:'design', en:'jean-frontend-workflow', zh:'Jean 前端流程（個人）',
+  zhDesc:'你的六步前端專案流程：離線思考 → 資訊架構 → 視覺方向 → 分塊產 code → 檢查 → 整頁回看 → 角色扮演驗證。就是這次正在跑的流程。',
+  enDesc:'Personal six-step frontend project workflow, from offline thinking to persona walkthrough.',
+  trigger:'「開新專案」「跑 workflow」' },
+{ id:'design-critique', type:'skill', cat:'design', en:'design:design-critique', zh:'設計批評（團隊版）',
+  zhDesc:'Design 套件的設計評論：結構化回饋設計稿的優缺點，適合團隊設計討論。',
+  enDesc:'Structured design critique from the design plugin suite.',
+  trigger:'/design:design-critique' },
+{ id:'accessibility-review', type:'skill', cat:'design', en:'design:accessibility-review', zh:'無障礙審查',
+  zhDesc:'檢查設計與實作的可及性：對比度、鍵盤操作、螢幕閱讀器friendly 程度，給出修正清單。',
+  enDesc:'Accessibility review covering contrast, keyboard navigation, and screen-reader friendliness.',
+  trigger:'/design:accessibility-review' },
+{ id:'design-handoff', type:'skill', cat:'design', en:'design:design-handoff', zh:'設計交付',
+  zhDesc:'把設計稿整理成工程可以直接開工的交付文件：規格、狀態、邊界情況。',
+  enDesc:'Prepare design handoff documentation for engineering.',
+  trigger:'/design:design-handoff' },
+{ id:'design-system-skill', type:'skill', cat:'design', en:'design:design-system', zh:'設計系統建構',
+  zhDesc:'規劃與建立設計系統：token、元件層級、命名規範與治理方式。',
+  enDesc:'Plan and build design systems — tokens, component hierarchy, naming, governance.',
+  trigger:'/design:design-system' },
+{ id:'user-research', type:'skill', cat:'design', en:'design:user-research', zh:'使用者研究',
+  zhDesc:'設計使用者研究計畫：訪談大綱、問卷、測試任務，幫你在做之前先搞懂使用者。',
+  enDesc:'Plan and run user research — interview guides, surveys, usability tasks.',
+  trigger:'/design:user-research' },
+{ id:'research-synthesis', type:'skill', cat:'design', en:'design:research-synthesis', zh:'研究綜整',
+  zhDesc:'把訪談記錄、回饋、數據綜整成洞察與設計方向，從一堆原始資料裡撈出「所以呢」。',
+  enDesc:'Synthesize research data into insights and design directions.',
+  trigger:'/design:research-synthesis' },
+{ id:'ux-copy', type:'skill', cat:'design', en:'design:ux-copy', zh:'UX 寫作',
+  zhDesc:'介面文案專門技能：按鈕、空狀態、引導文字，用對的語氣講對的話。',
+  enDesc:'Write interface copy — buttons, empty states, onboarding text.',
+  trigger:'/design:ux-copy' },
+{ id:'figma-use', type:'skill', cat:'design', en:'figma:figma-use', zh:'Figma 操作核心',
+  zhDesc:'在 Figma 檔案裡執行寫入操作的必備前置技能：建立／編輯節點、設定變數、做元件 variants。要動 Figma 畫布前一定先載入它。',
+  enDesc:'Mandatory prerequisite for Figma canvas writes — create/edit nodes, variables, components.',
+  gain:'讓 Claude 能正確地「動手改」你的 Figma 檔案而不會把檔案弄壞——批次改節點、設變數、建 variants 這些手動很耗時的操作都能自動化。',
+  trigger:'要求 Claude 修改 Figma 檔案時自動載入' },
+{ id:'figma-generate-design', type:'skill', cat:'design', en:'figma:figma-generate-design', zh:'從程式碼生成 Figma 設計',
+  zhDesc:'把 app 頁面或版型「畫進」Figma：自動找設計系統元件與變數，一個 section 一個 section 組裝畫面。',
+  enDesc:'Translate an application page or layout into Figma using design system components and tokens.',
+  gain:'解決「code 已經改了但設計稿是舊的」的同步問題——不用手動重畫，整頁直接從 code 生回 Figma，而且會用你的設計系統元件而不是散件。',
+  trigger:'「把這頁做進 Figma」' },
+{ id:'figma-generate-library', type:'skill', cat:'design', en:'figma:figma-generate-library', zh:'從程式碼建 Figma 元件庫',
+  zhDesc:'從 codebase 在 Figma 建出專業級設計系統：變數／token、元件庫、light/dark 主題、文件頁。',
+  enDesc:'Build or update a professional design system in Figma from a codebase.',
+  gain:'從零建設計系統最痛的就是把 token、元件、light/dark 主題一個個搬進 Figma——這個 skill 直接從 codebase 自動建好，省掉幾天的手工。',
+  trigger:'「幫我把 code 的設計系統建到 Figma」' },
+{ id:'figma-implement-design', type:'skill', cat:'design', en:'figma:figma-implement-design', zh:'Figma 轉程式碼',
+  zhDesc:'把 Figma 設計稿轉成 1:1 視覺還原的production code。貼 Figma 連結說「幫我實作」就會用它。',
+  enDesc:'Translate Figma designs into production-ready code with 1:1 visual fidelity.',
+  gain:'設計稿到 code 的「最後一哩路」：不用自己量間距、抄色票，產出跟設計稿 1:1 的可上線程式碼，接案交付速度直接翻倍。',
+  trigger:'貼 Figma 連結＋「幫我實作」' },
+{ id:'figma-code-connect', type:'skill', cat:'design', en:'figma:figma-code-connect', zh:'Figma Code Connect',
+  zhDesc:'建立 Figma 元件與 code 元件的對應檔（.figma.js），讓設計稿直接對到你的元件庫。',
+  enDesc:'Create and maintain Code Connect template files mapping Figma components to code.',
+  gain:'解決「設計稿上的按鈕跟 code 裡的 Button 對不起來」：對應好之後，之後所有 Figma 轉 code 都會直接用你既有的元件，不會重複造輪子。',
+  trigger:'「設定 Code Connect」' },
+{ id:'figma-design-rules', type:'skill', cat:'design', en:'figma:figma-create-design-system-rules', zh:'生成設計系統規則',
+  zhDesc:'幫你的 codebase 生成專屬的設計系統規則檔，讓之後的 Figma-to-code 都遵守你家的慣例。',
+  enDesc:'Generate custom design system rules for your codebase for Figma-to-code workflows.',
+  gain:'讓每次 Figma 轉 code 都遵守你家的命名與元件慣例，不用每次都重新提醒 Claude「我們的 spacing 是 4 的倍數」。',
+  trigger:'「create design system rules」' },
+
+/* ── Figma 擴充（Community）── */
+{ id:'fc-build-slides', type:'skill', cat:'figmaplus', en:'build-slides-figma', zh:'Figma Slides 簡報製作', on:'Figma',
+  zhDesc:'直接在 Figma Slides 裡生成整份簡報：版型、內容、頁面結構，做設計提案簡報不用離開 Figma。',
+  enDesc:'Author Figma Slides decks — layouts, content, page structure.',
+  trigger:'「用 Figma Slides 做一份簡報」' },
+{ id:'fc-audit-a11y', type:'skill', cat:'figmaplus', en:'audit-accessibility-figma', zh:'元件無障礙評分卡', on:'Figma',
+  zhDesc:'幫單一元件或元件集做深度無障礙健檢：互動狀態覆蓋、focus 指示、點擊目標大小、色盲模擬，產出評分卡。',
+  enDesc:'Per-component accessibility scorecard — interaction states, focus, target size, color-blind simulation.',
+  trigger:'「幫這個元件做無障礙評分」' },
+{ id:'fc-lint', type:'skill', cat:'figmaplus', en:'lint-design-figma', zh:'設計 Lint 檢查', on:'Figma',
+  zhDesc:'像 code lint 一樣掃你的設計：對比度不及格、寫死的顏色與樣式、脫離元件庫的 detached 元件，全部抓出來。',
+  enDesc:'Lint a node tree against WCAG 2.2 and design-system rules.',
+  trigger:'「lint 一下這個畫面」' },
+{ id:'fc-scan-code-a11y', type:'skill', cat:'figmaplus', en:'scan-code-accessibility-figma', zh:'程式碼無障礙掃描', on:'Figma',
+  zhDesc:'對 Figma 產出的 HTML 跑 axe-core 無障礙測試，確保交付的 code 過得了無障礙檢驗。',
+  enDesc:'Run axe-core accessibility tests on HTML generated from Figma.',
+  trigger:'「掃這段 code 的無障礙」' },
+{ id:'fc-analyze-set', type:'skill', cat:'figmaplus', en:'analyze-component-set-figma', zh:'元件集分析', on:'Figma',
+  zhDesc:'分析元件集的 variant 狀態機與 CSS 對應：哪些 variants 缺、屬性怎麼映射到程式碼。',
+  enDesc:'Examine variant state machines and CSS mappings of component sets.',
+  trigger:'「分析這個 component set」' },
+{ id:'fc-arrange-set', type:'skill', cat:'figmaplus', en:'arrange-component-set-figma', zh:'元件集排列整理', on:'Figma',
+  zhDesc:'把元件 variants 自動排成有標籤的整齊網格，元件頁不再是一坨散件。',
+  enDesc:'Organize component variants into labeled grids.',
+  trigger:'「把這些 variants 排整齊」' },
+{ id:'fc-properties', type:'skill', cat:'figmaplus', en:'component-properties-figma', zh:'元件屬性 API', on:'Figma',
+  zhDesc:'定義與套用元件的 property API：boolean、instance swap、text 屬性，讓元件像程式元件一樣有介面。',
+  enDesc:'Define and instantiate component property APIs.',
+  trigger:'「幫這個元件設 properties」' },
+{ id:'fc-deep-component', type:'skill', cat:'figmaplus', en:'deep-component-figma', zh:'元件深度解析', on:'Figma',
+  zhDesc:'走訪元件樹並解析所有 token 綁定：這個元件用了哪些變數、哪裡沒綁，一次看穿。',
+  enDesc:'Walk component trees with resolved token bindings.',
+  trigger:'「深入看這個元件的結構」' },
+{ id:'fc-component-doc', type:'skill', cat:'figmaplus', en:'generate-component-doc-figma', zh:'元件文件生成', on:'Figma',
+  zhDesc:'幫元件自動生成 Markdown 文件：用途、variants、屬性、使用範例，設計系統文件不用手寫。',
+  enDesc:'Create Markdown documentation for components.',
+  trigger:'「幫這個元件寫文件」' },
+{ id:'fc-parity', type:'skill', cat:'figmaplus', en:'check-design-parity-figma', zh:'設計與實作比對', on:'Figma',
+  zhDesc:'比對 Figma 設計稿與實際做出來的畫面，找出間距、顏色、字級的落差。驗收前跑一次。',
+  enDesc:'Check parity between Figma designs and implementation.',
+  trigger:'「比對設計稿跟實作的差異」' },
+{ id:'fc-annotations', type:'skill', cat:'figmaplus', en:'annotations-figma', zh:'設計標注', on:'Figma',
+  zhDesc:'在設計稿上自動加開發標注：尺寸、行為、邊界情況說明，交付給工程更清楚。',
+  enDesc:'Add development annotations to designs.',
+  trigger:'「幫這頁加標注」' },
+{ id:'fc-ds-inventory', type:'skill', cat:'figmaplus', en:'design-system-inventory-figma', zh:'設計系統盤點', on:'Figma',
+  zhDesc:'盤點整個檔案的設計系統使用狀況：元件、樣式、變數的使用率與孤兒元素。',
+  enDesc:'Inventory design-system usage across a file.',
+  trigger:'「盤點這個檔案的設計系統」' },
+{ id:'fc-export-tokens', type:'skill', cat:'figmaplus', en:'export-tokens-figma', zh:'Token 匯出', on:'Figma',
+  zhDesc:'把 Figma 變數匯出成標準 design token 格式（JSON），接 Style Dictionary 等工具鏈。',
+  enDesc:'Export Figma variables as standard design tokens (JSON).',
+  trigger:'「把變數匯出成 tokens」' },
+{ id:'fc-import-tokens', type:'skill', cat:'figmaplus', en:'import-tokens-figma', zh:'Token 匯入', on:'Figma',
+  zhDesc:'反向把 design token JSON 匯入成 Figma 變數，code 端的 token 改了可以同步回設計。',
+  enDesc:'Import design token JSON into Figma variables.',
+  trigger:'「把這份 tokens 匯入 Figma」' },
+{ id:'fc-library-vars', type:'skill', cat:'figmaplus', en:'library-variables-figma', zh:'元件庫變數操作', on:'Figma',
+  zhDesc:'列出與匯入元件庫（library）層級的變數，跨檔案使用共用變數。',
+  enDesc:'List and import library-level variables across files.',
+  trigger:'「用 library 的變數」' },
+{ id:'fc-manage-vars', type:'skill', cat:'figmaplus', en:'manage-variables-figma', zh:'變數管理', on:'Figma',
+  zhDesc:'批次管理 Figma 變數：建立、改名、重組 collection、調整模式（light/dark）。',
+  enDesc:'Manage Figma variables — create, rename, reorganize collections and modes.',
+  trigger:'「整理這個檔案的變數」' },
+{ id:'fc-setup-tokens', type:'skill', cat:'figmaplus', en:'setup-design-tokens-figma', zh:'Token 系統初始化', on:'Figma',
+  zhDesc:'從零建立一套 design token 結構：色彩、字級、間距的變數系統與命名規範。',
+  enDesc:'Set up a design token structure from scratch.',
+  trigger:'「幫我建一套 design tokens」' },
+{ id:'fc-figjam', type:'skill', cat:'figmaplus', en:'create-figjam-content', zh:'FigJam 內容生成', on:'Figma',
+  zhDesc:'在 FigJam 生成工作坊內容：便利貼、流程圖、腦力激盪板，開會素材一鍵生好。',
+  enDesc:'Create FigJam content — sticky notes, flows, brainstorm boards.',
+  trigger:'「在 FigJam 建一個 X 板」' },
+
+/* ── 前端・動畫 ── */
+{ id:'animate', type:'skill', cat:'frontend', en:'animate', zh:'微互動動畫',
+  zhDesc:'審視功能並加上有目的的動畫與微互動：hover 效果、轉場、動態回饋，讓 UI 活起來但不干擾使用。',
+  enDesc:'Enhance a feature with purposeful animations and micro-interactions that improve usability.',
+  trigger:'「加一些動畫／讓它更生動」' },
+{ id:'overdrive', type:'skill', cat:'frontend', en:'overdrive', zh:'極限視覺實作',
+  zhDesc:'把介面推到常規之外：shader、彈簧物理、scroll-driven 揭示、60fps 動畫。想做「哇」的東西用這個。',
+  enDesc:'Push interfaces past conventional limits — shaders, spring physics, scroll-driven reveals.',
+  trigger:'「做一個讓人驚艷的／all-out 的效果」' },
+{ id:'optimize', type:'skill', cat:'frontend', en:'optimize', zh:'前端效能優化',
+  zhDesc:'診斷並修復 UI 效能：載入速度、渲染、動畫卡頓、圖片、bundle 大小。',
+  enDesc:'Diagnose and fix UI performance — loading, rendering, animations, bundle size.',
+  trigger:'「網站很慢／很卡」' },
+{ id:'text-to-lottie', type:'skill', cat:'frontend', en:'text-to-lottie', zh:'Lottie 動畫生成',
+  zhDesc:'用文字描述直接產出 Lottie（Bodymovin）JSON 動畫，可在本地播放器預覽與修改。',
+  enDesc:'Author a Lottie JSON animation from a text description, rendered in a local player.',
+  trigger:'「做一個 Lottie 動畫」' },
+{ id:'gsap-core', type:'skill', cat:'frontend', en:'gsap-core', zh:'GSAP 核心',
+  zhDesc:'官方 GSAP 技能：gsap.to/from/fromTo、easing、stagger、響應式與減少動態偏好。所有 GSAP 動畫的基本功。',
+  enDesc:'Official GSAP skill for the core API — tweens, easing, stagger, matchMedia.',
+  trigger:'提到「GSAP」「JS 動畫」' },
+{ id:'gsap-timeline', type:'skill', cat:'frontend', en:'gsap-timeline', zh:'GSAP 時間軸',
+  zhDesc:'用 timeline 編排多段動畫：位置參數、巢狀、播放控制。要「先這個再那個」的動畫序列用它。',
+  enDesc:'GSAP timelines — sequencing, position parameter, nesting, playback control.',
+  trigger:'「動畫要照順序播」' },
+{ id:'gsap-scrolltrigger', type:'skill', cat:'frontend', en:'gsap-scrolltrigger', zh:'GSAP 捲動動畫',
+  zhDesc:'ScrollTrigger 專門技能：滾動驅動的動畫、pin 固定、scrub 跟手、視差效果。',
+  enDesc:'ScrollTrigger — scroll-linked animations, pinning, scrub, parallax.',
+  trigger:'「滾動時觸發動畫／視差」' },
+{ id:'gsap-react', type:'skill', cat:'frontend', en:'gsap-react', zh:'GSAP × React',
+  zhDesc:'在 React / Next.js 用 GSAP 的正確姿勢：useGSAP hook、refs、cleanup，避免 strict mode 踩雷。',
+  enDesc:'GSAP in React — useGSAP hook, refs, gsap.context(), cleanup.',
+  trigger:'「React 裡加 GSAP 動畫」' },
+{ id:'gsap-frameworks', type:'skill', cat:'frontend', en:'gsap-frameworks', zh:'GSAP × Vue/Svelte',
+  zhDesc:'非 React 框架的 GSAP 用法：Vue、Nuxt、Svelte 的生命週期、selector 範圍、卸載清理。',
+  enDesc:'GSAP for Vue, Svelte, and other frameworks — lifecycle, scoping, cleanup.',
+  trigger:'「Vue / Svelte 裡用 GSAP」' },
+{ id:'gsap-plugins', type:'skill', cat:'frontend', en:'gsap-plugins', zh:'GSAP 外掛',
+  zhDesc:'GSAP 外掛大全：ScrollTo、Flip、Draggable、SplitText、SVG 繪製、物理效果、CustomEase 等。',
+  enDesc:'GSAP plugins — ScrollTo, Flip, Draggable, SplitText, SVG and physics plugins.',
+  trigger:'「要用某個 GSAP plugin」' },
+{ id:'gsap-utils', type:'skill', cat:'frontend', en:'gsap-utils', zh:'GSAP 工具函式',
+  zhDesc:'gsap.utils 輔助函式：clamp、mapRange、interpolate、random、snap、wrap 等數值處理小工具。',
+  enDesc:'gsap.utils helpers — clamp, mapRange, interpolate, random, snap, wrap.',
+  trigger:'「gsap.utils 怎麼用」' },
+{ id:'gsap-performance', type:'skill', cat:'frontend', en:'gsap-performance', zh:'GSAP 效能',
+  zhDesc:'動畫效能優化：優先用 transform、避免 layout thrashing、will-change、批次處理，目標絲滑 60fps。',
+  enDesc:'GSAP performance — prefer transforms, avoid layout thrashing, smooth 60fps.',
+  trigger:'「動畫卡卡的」' },
+
+/* ── 工程開發 ── */
+{ id:'code-review', type:'skill', cat:'engineering', en:'code-review', zh:'程式碼審查',
+  zhDesc:'審查目前的 diff：找正確性 bug、可重用、可簡化、效能問題。有 low～ultra 不同力度，--fix 可直接套用修正，--comment 可發 PR 留言。',
+  enDesc:'Review the current diff for correctness bugs and cleanup opportunities at configurable effort levels.',
+  trigger:'/code-review' },
+{ id:'simplify', type:'skill', cat:'engineering', en:'simplify', zh:'程式碼簡化',
+  zhDesc:'只看「品質」不抓 bug：重用、簡化、效率、抽象層級的清理，看完直接動手改。',
+  enDesc:'Review changed code for reuse, simplification, and efficiency cleanups, then apply fixes.',
+  trigger:'/simplify' },
+{ id:'verify', type:'skill', cat:'engineering', en:'verify', zh:'改動驗證',
+  zhDesc:'不只跑測試——實際把 app 跑起來、操作看看，驗證改動真的做到它該做的事。',
+  enDesc:'Verify a code change actually works by running the app and observing behavior.',
+  trigger:'「驗證這個改動有效」' },
+{ id:'run', type:'skill', cat:'engineering', en:'run', zh:'啟動專案',
+  zhDesc:'啟動並操作這個專案的 app：跑起來、截圖、確認改動在真實環境下運作。',
+  enDesc:'Launch and drive the project’s app to see a change working.',
+  trigger:'「把專案跑起來／截圖看看」' },
+{ id:'review-pr', type:'skill', cat:'engineering', en:'review', zh:'PR 審查',
+  zhDesc:'審查一個 Pull Request：看改動內容、給出評論與建議。',
+  enDesc:'Review a pull request.',
+  trigger:'/review' },
+{ id:'security-review', type:'skill', cat:'engineering', en:'security-review', zh:'安全審查',
+  zhDesc:'針對程式碼做安全性檢查：常見漏洞、注入、權限問題等。',
+  enDesc:'Security-focused review of the codebase or diff.',
+  trigger:'/security-review' },
+{ id:'init', type:'skill', cat:'engineering', en:'init', zh:'初始化 CLAUDE.md',
+  zhDesc:'掃描專案並生成 CLAUDE.md 設定檔，讓之後的 Claude 對話都懂這個 codebase 的脈絡。',
+  enDesc:'Scan the project and generate a CLAUDE.md context file.',
+  trigger:'/init' },
+{ id:'claude-api', type:'skill', cat:'engineering', en:'claude-api', zh:'Claude API 參考',
+  zhDesc:'Claude API／Anthropic SDK 的權威參考：model id、價格、參數、streaming、tool use、caching。寫任何接 Claude 的程式前先讀它。',
+  enDesc:'Reference for the Claude API — model ids, pricing, params, streaming, tool use, caching.',
+  trigger:'寫 Claude／LLM 相關程式時自動觸發' },
+{ id:'eng-architecture', type:'skill', cat:'engineering', en:'engineering:architecture', zh:'架構設計',
+  zhDesc:'系統架構討論與決策：邊界劃分、技術選型、trade-off 分析，產出架構文件。',
+  enDesc:'System architecture design — boundaries, technology choices, trade-off analysis.',
+  trigger:'/engineering:architecture' },
+{ id:'eng-debug', type:'skill', cat:'engineering', en:'engineering:debug', zh:'除錯助手',
+  zhDesc:'系統化除錯流程：重現、隔離、假設、驗證，幫你從錯誤訊息追到根因。',
+  enDesc:'Systematic debugging — reproduce, isolate, hypothesize, verify.',
+  trigger:'/engineering:debug' },
+{ id:'eng-system-design', type:'skill', cat:'engineering', en:'engineering:system-design', zh:'系統設計',
+  zhDesc:'設計新系統或服務：需求拆解、容量估算、API 設計、資料模型。',
+  enDesc:'Design new systems — requirements, capacity, API design, data models.',
+  trigger:'/engineering:system-design' },
+{ id:'eng-testing', type:'skill', cat:'engineering', en:'engineering:testing-strategy', zh:'測試策略',
+  zhDesc:'規劃測試金字塔：什麼該單元測、什麼該整合測、覆蓋率目標與測試資料策略。',
+  enDesc:'Plan testing strategy — unit vs integration, coverage targets, test data.',
+  trigger:'/engineering:testing-strategy' },
+{ id:'eng-tech-debt', type:'skill', cat:'engineering', en:'engineering:tech-debt', zh:'技術債盤點',
+  zhDesc:'盤點與排序技術債：影響評估、償還計畫、跟業務溝通的說法。',
+  enDesc:'Inventory and prioritize technical debt with a repayment plan.',
+  trigger:'/engineering:tech-debt' },
+{ id:'eng-deploy', type:'skill', cat:'engineering', en:'engineering:deploy-checklist', zh:'部署檢查清單',
+  zhDesc:'上線前檢查：回滾計畫、監控、feature flag、資料庫遷移，降低部署翻車機率。',
+  enDesc:'Pre-deploy checklist — rollback plans, monitoring, migrations.',
+  trigger:'/engineering:deploy-checklist' },
+{ id:'eng-incident', type:'skill', cat:'engineering', en:'engineering:incident-response', zh:'事故應變',
+  zhDesc:'線上事故的應變流程：分級、溝通、止血、事後檢討（postmortem）。',
+  enDesc:'Incident response — severity, communication, mitigation, postmortem.',
+  trigger:'/engineering:incident-response' },
+{ id:'eng-docs', type:'skill', cat:'engineering', en:'engineering:documentation', zh:'技術文件',
+  zhDesc:'寫工程文件：README、API 文件、架構說明，寫給「三個月後的自己」看得懂。',
+  enDesc:'Write engineering documentation — READMEs, API docs, architecture notes.',
+  trigger:'/engineering:documentation' },
+{ id:'eng-standup', type:'skill', cat:'engineering', en:'engineering:standup', zh:'站會更新',
+  zhDesc:'根據你最近的活動自動整理 standup 更新：做了什麼、接下來做什麼、卡在哪。',
+  enDesc:'Generate a standup update from your recent activity.',
+  trigger:'/engineering:standup' },
+
+/* ── 文件・簡報 ── */
+{ id:'pptx', type:'skill', cat:'docs', en:'anthropic-skills:pptx', zh:'PowerPoint 簡報',
+  zhDesc:'任何 .pptx 都歸它管：做 pitch deck、讀取簡報內容、修改既有檔案、處理模板與講者備註。提到「簡報」「deck」就會觸發。',
+  enDesc:'Create, read, and edit .pptx decks, templates, layouts, and speaker notes.',
+  trigger:'「做一份簡報」或附上 .pptx' },
+{ id:'docx', type:'skill', cat:'docs', en:'anthropic-skills:docx', zh:'Word 文件',
+  zhDesc:'建立與編輯 .docx：報告、合約、格式化文件，含樣式與表格處理。',
+  enDesc:'Create and edit .docx documents with styles and tables.',
+  trigger:'「做一份 Word 文件」或附上 .docx' },
+{ id:'pdf', type:'skill', cat:'docs', en:'anthropic-skills:pdf', zh:'PDF 處理',
+  zhDesc:'讀取、生成、合併、拆分 PDF，抽取文字與表格內容。',
+  enDesc:'Read, generate, merge, and split PDFs; extract text and tables.',
+  trigger:'附上 PDF 或「做一份 PDF」' },
+{ id:'xlsx', type:'skill', cat:'docs', en:'anthropic-skills:xlsx', zh:'Excel 試算表',
+  zhDesc:'建立與編輯 .xlsx：公式、多工作表、圖表，資料整理與報表都行。',
+  enDesc:'Create and edit .xlsx spreadsheets with formulas and charts.',
+  trigger:'「做一份 Excel」或附上 .xlsx' },
+
+/* ── 生產力・知識 ── */
+{ id:'deep-research', type:'skill', cat:'productivity', en:'deep-research', zh:'深度研究',
+  zhDesc:'多代理研究引擎：大量網路搜尋、抓取來源、對抗式查證、產出有引用的研究報告。要做認真的調查用它。',
+  enDesc:'Fan-out web research with adversarial verification and a cited synthesis report.',
+  trigger:'「幫我深入研究 X」' },
+{ id:'loop', type:'skill', cat:'productivity', en:'loop', zh:'循環執行',
+  zhDesc:'讓一個指令或任務每隔一段時間重複跑：盯部署、輪詢狀態、定期檢查。',
+  enDesc:'Run a prompt or command on a recurring interval.',
+  trigger:'/loop 5m /某指令' },
+{ id:'schedule', type:'skill', cat:'productivity', en:'schedule', zh:'排程雲端任務',
+  zhDesc:'建立照 cron 排程自動執行的雲端 agent：每天早上整理信箱、每週產報告，或一次性的「明天三點提醒我」。',
+  enDesc:'Create scheduled cloud agents (routines) that run on a cron schedule.',
+  trigger:'「每天／每週幫我自動做 X」' },
+{ id:'consolidate-memory', type:'skill', cat:'productivity', en:'anthropic-skills:consolidate-memory', zh:'記憶整理',
+  zhDesc:'整理 Claude 的長期記憶檔案：合併重複、修正過期內容、清理索引。',
+  enDesc:'Reflective pass over memory files — merge duplicates, fix stale facts.',
+  trigger:'「整理一下你的記憶」' },
+{ id:'prod-start', type:'skill', cat:'productivity', en:'productivity:start', zh:'生產力系統初始化',
+  zhDesc:'初始化個人生產力系統：從既有任務清單建立工作記憶、解碼你的縮寫與代號。',
+  enDesc:'Initialize the productivity system and bootstrap working memory.',
+  trigger:'/productivity:start' },
+{ id:'prod-update', type:'skill', cat:'productivity', en:'productivity:update', zh:'任務同步更新',
+  zhDesc:'從你目前的活動同步任務與記憶：撈新指派、清過期任務、補齊不認識的人與專案。',
+  enDesc:'Sync tasks and refresh memory from your current activity.',
+  trigger:'/productivity:update' },
+{ id:'prod-tasks', type:'skill', cat:'productivity', en:'productivity:task-management', zh:'任務管理',
+  zhDesc:'用一個共享的 TASKS.md 管理待辦：新增、完成、追蹤承諾事項。',
+  enDesc:'Simple task management using a shared TASKS.md file.',
+  trigger:'「我的任務有哪些／加一個待辦」' },
+{ id:'prod-memory', type:'skill', cat:'productivity', en:'productivity:memory-management', zh:'工作記憶系統',
+  zhDesc:'雙層記憶系統：讓 Claude 像同事一樣聽懂你的縮寫、暱稱、內部用語。',
+  enDesc:'Two-tier memory system that decodes shorthand, acronyms, and internal language.',
+  trigger:'自動套用於日常協作' },
+{ id:'es-search', type:'skill', cat:'productivity', en:'enterprise-search:search', zh:'企業知識搜尋',
+  zhDesc:'跨所有連接平台（信箱、文件、Slack、wiki）搜尋公司知識，一次問遍所有來源。',
+  enDesc:'Search across all connected platforms for company knowledge.',
+  trigger:'「幫我在公司資料裡找 X」' },
+{ id:'es-digest', type:'skill', cat:'productivity', en:'enterprise-search:digest', zh:'資訊摘要',
+  zhDesc:'把多個來源的近期動態整理成一份摘要：今天該知道什麼，一次看完。',
+  enDesc:'Digest recent activity across sources into one summary.',
+  trigger:'/enterprise-search:digest' },
+{ id:'es-synthesis', type:'skill', cat:'productivity', en:'enterprise-search:knowledge-synthesis', zh:'知識綜整',
+  zhDesc:'把散落各平台的資訊綜整成一份完整的主題知識文件。',
+  enDesc:'Synthesize scattered information into a coherent knowledge document.',
+  trigger:'/enterprise-search:knowledge-synthesis' },
+{ id:'es-strategy', type:'skill', cat:'productivity', en:'enterprise-search:search-strategy', zh:'搜尋策略',
+  zhDesc:'規劃複雜搜尋的策略：先搜哪裡、用什麼關鍵字、如何交叉驗證。',
+  enDesc:'Plan search strategy for complex multi-source queries.',
+  trigger:'/enterprise-search:search-strategy' },
+{ id:'es-sources', type:'skill', cat:'productivity', en:'enterprise-search:source-management', zh:'來源管理',
+  zhDesc:'管理企業搜尋的資料來源：哪些平台可搜、優先序、權限範圍。',
+  enDesc:'Manage data sources for enterprise search.',
+  trigger:'/enterprise-search:source-management' },
+{ id:'setup-cowork', type:'skill', cat:'productivity', en:'anthropic-skills:setup-cowork', zh:'Cowork 環境設定',
+  zhDesc:'設定 Cowork 協作模式的環境與輸出目錄。',
+  enDesc:'Set up the Cowork collaboration environment.',
+  trigger:'/anthropic-skills:setup-cowork' },
+
+/* ── 產品管理 ── */
+{ id:'pm-brainstorm', type:'skill', cat:'pm', en:'product-management:brainstorm', zh:'產品腦力激盪',
+  zhDesc:'跟一個犀利的思考夥伴 brainstorm 產品想法、問題空間或策略問題，會挑戰你的假設。',
+  enDesc:'Brainstorm a product idea or strategic question with a sharp thinking partner.',
+  trigger:'「跟我 brainstorm 一個產品想法」' },
+{ id:'pm-write-spec', type:'skill', cat:'pm', en:'product-management:write-spec', zh:'撰寫產品規格',
+  zhDesc:'把想法寫成結構化的 PRD／spec：問題、目標、方案、成功指標、邊界情況。',
+  enDesc:'Write a structured product spec — problem, goals, solution, success metrics.',
+  trigger:'/product-management:write-spec' },
+{ id:'pm-sprint', type:'skill', cat:'pm', en:'product-management:sprint-planning', zh:'Sprint 規劃',
+  zhDesc:'規劃 sprint：排優先序、估算、拆任務、確認團隊容量。',
+  enDesc:'Plan sprints — prioritization, estimation, task breakdown.',
+  trigger:'/product-management:sprint-planning' },
+{ id:'pm-roadmap', type:'skill', cat:'pm', en:'product-management:roadmap-update', zh:'Roadmap 更新',
+  zhDesc:'更新產品路線圖：進度盤點、優先序調整、對外溝通版本。',
+  enDesc:'Update the product roadmap with progress and priority changes.',
+  trigger:'/product-management:roadmap-update' },
+{ id:'pm-metrics', type:'skill', cat:'pm', en:'product-management:metrics-review', zh:'指標檢視',
+  zhDesc:'檢視產品指標：北極星、漏斗、留存，找出異常與機會點。',
+  enDesc:'Review product metrics — north star, funnels, retention.',
+  trigger:'/product-management:metrics-review' },
+{ id:'pm-stakeholder', type:'skill', cat:'pm', en:'product-management:stakeholder-update', zh:'利害關係人更新',
+  zhDesc:'寫給主管／其他部門的進度更新：講重點、講影響、講需要的支援。',
+  enDesc:'Write stakeholder updates — progress, impact, asks.',
+  trigger:'/product-management:stakeholder-update' },
+{ id:'pm-research', type:'skill', cat:'pm', en:'product-management:synthesize-research', zh:'研究綜整（PM）',
+  zhDesc:'把使用者回饋、訪談、數據綜整成產品決策的依據。',
+  enDesc:'Synthesize user research into product decision inputs.',
+  trigger:'/product-management:synthesize-research' },
+{ id:'pm-competitive', type:'skill', cat:'pm', en:'product-management:competitive-brief', zh:'競品簡報',
+  zhDesc:'產出競品分析簡報：功能對比、定位、優劣勢與應對建議。',
+  enDesc:'Competitive analysis brief — feature comparison, positioning, recommendations.',
+  trigger:'/product-management:competitive-brief' },
+
+/* ── 行銷・品牌 ── */
+{ id:'mkt-content', type:'skill', cat:'marketing', en:'marketing:content-creation', zh:'行銷內容創作',
+  zhDesc:'產出各式行銷內容：部落格、社群貼文、廣告文案，符合品牌調性。',
+  enDesc:'Create marketing content — blogs, social posts, ad copy.',
+  trigger:'/marketing:content-creation' },
+{ id:'mkt-draft', type:'skill', cat:'marketing', en:'marketing:draft-content', zh:'內容草稿',
+  zhDesc:'快速起草行銷素材的初稿，再交給你打磨。',
+  enDesc:'Draft marketing content quickly for refinement.',
+  trigger:'/marketing:draft-content' },
+{ id:'mkt-campaign', type:'skill', cat:'marketing', en:'marketing:campaign-plan', zh:'行銷活動規劃',
+  zhDesc:'規劃完整 campaign：目標受眾、通路、時程、預算分配、KPI。',
+  enDesc:'Plan marketing campaigns — audience, channels, timeline, KPIs.',
+  trigger:'/marketing:campaign-plan' },
+{ id:'mkt-email', type:'skill', cat:'marketing', en:'marketing:email-sequence', zh:'Email 序列',
+  zhDesc:'設計自動化 email 序列：歡迎信、nurture、轉換信，含主旨與內文。',
+  enDesc:'Design email sequences — welcome, nurture, conversion.',
+  trigger:'/marketing:email-sequence' },
+{ id:'mkt-seo', type:'skill', cat:'marketing', en:'marketing:seo-audit', zh:'SEO 稽核',
+  zhDesc:'檢查網站 SEO：技術面、內容面、關鍵字布局，給出優化清單。',
+  enDesc:'Audit website SEO — technical, content, keywords.',
+  trigger:'/marketing:seo-audit' },
+{ id:'mkt-performance', type:'skill', cat:'marketing', en:'marketing:performance-report', zh:'成效報告',
+  zhDesc:'整理行銷成效報告：各通路數據、ROI、洞察與下一步建議。',
+  enDesc:'Marketing performance reports — channel data, ROI, insights.',
+  trigger:'/marketing:performance-report' },
+{ id:'mkt-brand-review', type:'skill', cat:'marketing', en:'marketing:brand-review', zh:'品牌審視',
+  zhDesc:'檢視內容是否符合品牌規範：語氣、用詞、視覺方向。',
+  enDesc:'Review content against brand guidelines.',
+  trigger:'/marketing:brand-review' },
+{ id:'mkt-competitive', type:'skill', cat:'marketing', en:'marketing:competitive-brief', zh:'競爭分析（行銷）',
+  zhDesc:'從行銷角度做競爭分析：訊息策略、通路布局、聲量對比。',
+  enDesc:'Competitive brief from a marketing angle — messaging, channels, share of voice.',
+  trigger:'/marketing:competitive-brief' },
+{ id:'bv-discover', type:'skill', cat:'marketing', en:'brand-voice:discover-brand', zh:'品牌素材探索',
+  zhDesc:'自動搜遍你連接的平台（Notion、Drive、Confluence…）找出所有品牌相關文件、逐字稿、設計資產，產出盤點報告。',
+  enDesc:'Search connected platforms for brand materials and produce a discovery report.',
+  trigger:'「找出我們散落各處的品牌資料」' },
+{ id:'bv-guidelines', type:'skill', cat:'marketing', en:'brand-voice:generate-guidelines', zh:'品牌語調指南生成',
+  zhDesc:'從文件、銷售通話逐字稿或探索報告生成品牌語調指南（brand voice guidelines）。',
+  enDesc:'Generate brand voice guidelines from documents, transcripts, or discovery reports.',
+  trigger:'「幫我生成品牌語調指南」' },
+{ id:'bv-enforce', type:'skill', cat:'marketing', en:'brand-voice:enforce-voice', zh:'品牌語調套用',
+  zhDesc:'寫內容時自動套用品牌指南：cold email、提案、文案都維持一致的品牌聲音。',
+  enDesc:'Apply brand guidelines to content creation.',
+  trigger:'「用我們的品牌語調寫 X」' },
+
+/* ── 業務・客服 ── */
+{ id:'cr-prospect', type:'skill', cat:'sales', en:'common-room:prospect', zh:'潛在客戶開發',
+  zhDesc:'用 Common Room 的社群與產品訊號找出值得接觸的潛在客戶。',
+  enDesc:'Find prospects worth reaching out to using Common Room signals.',
+  trigger:'/common-room:prospect' },
+{ id:'cr-account-research', type:'skill', cat:'sales', en:'common-room:account-research', zh:'客戶研究',
+  zhDesc:'深入研究一個目標帳戶：組織、動態、相關人物與切入點。',
+  enDesc:'Deep research on a target account — org, activity, entry points.',
+  trigger:'/common-room:account-research' },
+{ id:'cr-contact-research', type:'skill', cat:'sales', en:'common-room:contact-research', zh:'聯絡人研究',
+  zhDesc:'研究特定聯絡人：背景、活動足跡、最佳接觸方式。',
+  enDesc:'Research a specific contact — background, activity, best approach.',
+  trigger:'/common-room:contact-research' },
+{ id:'cr-call-prep', type:'skill', cat:'sales', en:'common-room:call-prep', zh:'通話前準備',
+  zhDesc:'開會前快速做功課：對方公司近況、過往互動、該問的問題。',
+  enDesc:'Prepare for a call — company news, past interactions, questions to ask.',
+  trigger:'/common-room:call-prep' },
+{ id:'cr-outreach', type:'skill', cat:'sales', en:'common-room:compose-outreach', zh:'撰寫開發信',
+  zhDesc:'根據對方的訊號與情境撰寫個人化的 outreach 訊息。',
+  enDesc:'Compose personalized outreach based on signals and context.',
+  trigger:'/common-room:compose-outreach' },
+{ id:'cr-account-plan', type:'skill', cat:'sales', en:'common-room:generate-account-plan', zh:'客戶經營計畫',
+  zhDesc:'生成完整的策略性客戶經營計畫（account plan）。',
+  enDesc:'Generate a comprehensive strategic account plan.',
+  trigger:'/common-room:generate-account-plan' },
+{ id:'cr-weekly', type:'skill', cat:'sales', en:'common-room:weekly-prep-brief', zh:'每週準備簡報',
+  zhDesc:'從你的行事曆與 Common Room 資料生成下週會議的準備簡報。',
+  enDesc:'Weekly prep briefing from your calendar and Common Room.',
+  trigger:'/common-room:weekly-prep-brief' },
+{ id:'apollo-prospect', type:'skill', cat:'sales', en:'apollo:prospect', zh:'Apollo 名單開發',
+  zhDesc:'用 Apollo 的 B2B 資料庫搜尋並建立潛在客戶名單。',
+  enDesc:'Search and build prospect lists with Apollo’s B2B database.',
+  trigger:'/apollo:prospect' },
+{ id:'apollo-enrich', type:'skill', cat:'sales', en:'apollo:enrich-lead', zh:'名單資料補全',
+  zhDesc:'補全 lead 的資料：職稱、公司、聯絡方式等。',
+  enDesc:'Enrich lead data — titles, companies, contact info.',
+  trigger:'/apollo:enrich-lead' },
+{ id:'apollo-sequence', type:'skill', cat:'sales', en:'apollo:sequence-load', zh:'載入開發序列',
+  zhDesc:'把名單載入 Apollo 的 outreach 序列開始自動跟進。',
+  enDesc:'Load leads into Apollo outreach sequences.',
+  trigger:'/apollo:sequence-load' },
+{ id:'cs-triage', type:'skill', cat:'sales', en:'customer-support:ticket-triage', zh:'工單分流',
+  zhDesc:'自動分類與排序客服工單：緊急度、類型、該給誰處理。',
+  enDesc:'Triage support tickets — urgency, type, routing.',
+  trigger:'/customer-support:ticket-triage' },
+{ id:'cs-draft', type:'skill', cat:'sales', en:'customer-support:draft-response', zh:'客服回覆草稿',
+  zhDesc:'根據工單脈絡與知識庫起草客服回覆。',
+  enDesc:'Draft support responses using ticket context and the knowledge base.',
+  trigger:'/customer-support:draft-response' },
+{ id:'cs-research', type:'skill', cat:'sales', en:'customer-support:customer-research', zh:'客戶背景調查',
+  zhDesc:'查一個客戶的完整背景：使用狀況、歷史工單、商務關係。',
+  enDesc:'Research a customer — usage, ticket history, business relationship.',
+  trigger:'/customer-support:customer-research' },
+{ id:'cs-escalation', type:'skill', cat:'sales', en:'customer-support:customer-escalation', zh:'客訴升級處理',
+  zhDesc:'處理客戶升級事件：彙整脈絡、判斷嚴重度、擬定應對與內部溝通。',
+  enDesc:'Handle customer escalations — context, severity, response plan.',
+  trigger:'/customer-support:customer-escalation' },
+{ id:'cs-kb', type:'skill', cat:'sales', en:'customer-support:kb-article', zh:'知識庫文章',
+  zhDesc:'把解決方案寫成知識庫文章，讓同樣的問題下次自助解決。',
+  enDesc:'Write knowledge base articles from resolved issues.',
+  trigger:'/customer-support:kb-article' },
+
+/* ── 團隊協作 ── */
+{ id:'slack-digest', type:'skill', cat:'collab', en:'slack:channel-digest', zh:'Slack 頻道摘要（多頻道）',
+  zhDesc:'一次摘要多個 Slack 頻道的近期動態，快速跟上錯過的討論。',
+  enDesc:'Digest recent activity across multiple Slack channels.',
+  trigger:'/slack-by-salesforce:channel-digest' },
+{ id:'slack-summarize', type:'skill', cat:'collab', en:'slack:summarize-channel', zh:'Slack 頻道摘要（單頻道）',
+  zhDesc:'摘要單一頻道的近期討論：誰說了什麼、結論是什麼。',
+  enDesc:'Summarize recent activity in one Slack channel.',
+  trigger:'/slack-by-salesforce:summarize-channel' },
+{ id:'slack-find', type:'skill', cat:'collab', en:'slack:find-discussions', zh:'Slack 議題搜尋',
+  zhDesc:'跨頻道找出關於某個主題的所有討論串。',
+  enDesc:'Find discussions about a topic across Slack channels.',
+  trigger:'/slack-by-salesforce:find-discussions' },
+{ id:'slack-announce', type:'skill', cat:'collab', en:'slack:draft-announcement', zh:'Slack 公告草稿',
+  zhDesc:'起草格式漂亮的 Slack 公告並存成草稿，用對 mrkdwn 語法。',
+  enDesc:'Draft a well-formatted Slack announcement.',
+  trigger:'/slack-by-salesforce:draft-announcement' },
+{ id:'slack-standup', type:'skill', cat:'collab', en:'slack:standup', zh:'Slack 站會更新',
+  zhDesc:'根據你的 Slack 活動自動生成 standup 更新。',
+  enDesc:'Generate a standup update from your Slack activity.',
+  trigger:'/slack-by-salesforce:standup' },
+{ id:'slack-messaging', type:'skill', cat:'collab', en:'slack:slack-messaging', zh:'Slack 訊息排版',
+  zhDesc:'撰寫排版正確的 Slack 訊息：mrkdwn 語法、結構、易讀性。',
+  enDesc:'Compose well-formatted Slack messages using mrkdwn.',
+  trigger:'寫 Slack 訊息時自動套用' },
+{ id:'slack-search', type:'skill', cat:'collab', en:'slack:slack-search', zh:'Slack 搜尋',
+  zhDesc:'有效搜尋 Slack 的技巧與策略。',
+  enDesc:'Effective Slack search strategies.',
+  trigger:'搜 Slack 時自動套用' },
+{ id:'atl-tasks', type:'skill', cat:'collab', en:'atlassian:capture-tasks-from-meeting-notes', zh:'會議記錄轉 Jira 任務',
+  zhDesc:'分析會議記錄找出 action items，自動建立 Jira 任務並指派給對的人。',
+  enDesc:'Extract action items from meeting notes and create assigned Jira tasks.',
+  trigger:'「把這份會議記錄變成 Jira 任務」' },
+{ id:'atl-status', type:'skill', cat:'collab', en:'atlassian:generate-status-report', zh:'Jira 狀態報告',
+  zhDesc:'從 Jira issues 生成專案狀態報告並發佈到 Confluence：進度、blocker、優先序。',
+  enDesc:'Generate project status reports from Jira and publish to Confluence.',
+  trigger:'「產出這個專案的狀態報告」' },
+{ id:'atl-knowledge', type:'skill', cat:'collab', en:'atlassian:search-company-knowledge', zh:'公司知識搜尋（Atlassian）',
+  zhDesc:'搜尋 Confluence、Jira 等內部知識庫，解釋公司內部的系統、流程、術語，附引用來源。',
+  enDesc:'Search Confluence/Jira to find and explain internal concepts with citations.',
+  trigger:'「我們公司的 X 是什麼／怎麼運作」' },
+{ id:'atl-backlog', type:'skill', cat:'collab', en:'atlassian:spec-to-backlog', zh:'規格轉 Backlog',
+  zhDesc:'把 Confluence 規格文件自動拆成 Jira backlog：Epic ＋ 實作 tickets，全部連結好。',
+  enDesc:'Convert Confluence specs into structured Jira backlogs with Epics and tickets.',
+  trigger:'「把這份 spec 拆成 Jira 票」' },
+{ id:'atl-triage', type:'skill', cat:'collab', en:'atlassian:triage-issue', zh:'Bug 智慧分流',
+  zhDesc:'收到 bug 報告先搜 Jira 找重複票：是舊問題就補充到原票，是新問題就建一張結構完整的票。',
+  enDesc:'Triage bugs by searching Jira for duplicates before creating new issues.',
+  trigger:'「幫我 triage 這個 bug」' },
+
+/* ── 法務 ── */
+{ id:'legal-review-contract', type:'skill', cat:'legal', en:'legal:review-contract', zh:'合約審閱',
+  zhDesc:'逐條比對合約與你的談判準則（playbook）：標出偏差、生成 redline 修訂、附商業影響分析與談判策略。',
+  enDesc:'Clause-by-clause contract review against your playbook with redlines and impact analysis.',
+  trigger:'「幫我審這份合約」' },
+{ id:'legal-triage-nda', type:'skill', cat:'legal', en:'legal:triage-nda', zh:'NDA 快速分級',
+  zhDesc:'快速分級新進 NDA：GREEN（標準可簽）／YELLOW（法務看一下）／RED（完整審查），並抓出藏在裡面的競業、挖角條款。',
+  enDesc:'Rapidly triage NDAs as GREEN/YELLOW/RED, screening for embedded non-competes.',
+  trigger:'「看一下這份 NDA 能不能簽」' },
+{ id:'legal-compliance', type:'skill', cat:'legal', en:'legal:compliance-check', zh:'法遵檢查',
+  zhDesc:'檢查一個產品功能或商業行動的法遵面：適用法規、需要的核准、風險區域。碰個資的功能上線前先跑。',
+  enDesc:'Compliance check on a proposed action — applicable regulations, approvals, risk areas.',
+  trigger:'「這個功能有沒有法遵問題」' },
+{ id:'legal-risk', type:'skill', cat:'legal', en:'legal:legal-risk-assessment', zh:'法律風險評估',
+  zhDesc:'用嚴重度×可能性框架評估法律風險，判斷要不要升級給資深法務或外部律師。',
+  enDesc:'Assess legal risks using a severity-by-likelihood framework with escalation criteria.',
+  trigger:'/legal:legal-risk-assessment' },
+{ id:'legal-response', type:'skill', cat:'legal', en:'legal:legal-response', zh:'法務回覆範本',
+  zhDesc:'用設定好的範本回覆常見法務詢問：個資請求、訴訟保全通知、廠商法務問題，內建升級檢查。',
+  enDesc:'Respond to common legal inquiries using templates, with escalation checks.',
+  trigger:'/legal:legal-response' },
+{ id:'legal-brief', type:'skill', cat:'legal', en:'legal:brief', zh:'法務情報簡報',
+  zhDesc:'生成法務工作簡報：每日掃描、主題研究、或突發事件（資料外洩、訴訟威脅）的快速脈絡整理。',
+  enDesc:'Contextual legal briefings — daily summary, topic research, incident response.',
+  trigger:'/legal:brief' },
+{ id:'legal-meeting', type:'skill', cat:'legal', en:'legal:meeting-briefing', zh:'法務會議準備',
+  zhDesc:'為有法律議題的會議準備結構化簡報，並追蹤產生的 action items。',
+  enDesc:'Prepare structured briefings for legally relevant meetings.',
+  trigger:'/legal:meeting-briefing' },
+{ id:'legal-signature', type:'skill', cat:'legal', en:'legal:signature-request', zh:'電子簽核發送',
+  zhDesc:'文件定稿後的簽署流程：簽前檢查清單、簽署順序設定、發送 e-signature。',
+  enDesc:'Prepare and route documents for e-signature with pre-signature checks.',
+  trigger:'/legal:signature-request' },
+{ id:'legal-vendor', type:'skill', cat:'legal', en:'legal:vendor-check', zh:'廠商合約盤點',
+  zhDesc:'跨系統盤點與某廠商的所有合約：MSA、DPA、SOW 哪些有哪些缺，到期日與存續義務。',
+  enDesc:'Check vendor agreement status across systems with gap analysis and deadlines.',
+  trigger:'「我們跟 X 廠商的合約狀態」' },
+
+/* ── 人資 ── */
+{ id:'hr-comp', type:'skill', cat:'hr', en:'human-resources:comp-analysis', zh:'薪酬分析',
+  zhDesc:'分析薪酬數據：市場對標、內部公平性、調薪建議。',
+  enDesc:'Compensation analysis — market benchmarks, internal equity.',
+  trigger:'/human-resources:comp-analysis' },
+{ id:'hr-offer', type:'skill', cat:'hr', en:'human-resources:draft-offer', zh:'Offer 草擬',
+  zhDesc:'草擬聘用 offer：職級、薪酬包、條款。',
+  enDesc:'Draft employment offers — level, package, terms.',
+  trigger:'/human-resources:draft-offer' },
+{ id:'hr-interview', type:'skill', cat:'hr', en:'human-resources:interview-prep', zh:'面試準備',
+  zhDesc:'準備面試：題目設計、評分標準、候選人背景重點。',
+  enDesc:'Interview preparation — questions, rubrics, candidate background.',
+  trigger:'/human-resources:interview-prep' },
+{ id:'hr-onboarding', type:'skill', cat:'hr', en:'human-resources:onboarding', zh:'新人入職',
+  zhDesc:'規劃 onboarding 流程：第一週安排、必要帳號、學習路徑。',
+  enDesc:'Plan onboarding — first week, accounts, learning paths.',
+  trigger:'/human-resources:onboarding' },
+{ id:'hr-org', type:'skill', cat:'hr', en:'human-resources:org-planning', zh:'組織規劃',
+  zhDesc:'組織設計與人力規劃：編制、匯報線、成長計畫。',
+  enDesc:'Org design and headcount planning.',
+  trigger:'/human-resources:org-planning' },
+{ id:'hr-report', type:'skill', cat:'hr', en:'human-resources:people-report', zh:'人力報告',
+  zhDesc:'產出人力數據報告：人數、流動率、招聘進度。',
+  enDesc:'People reports — headcount, attrition, hiring progress.',
+  trigger:'/human-resources:people-report' },
+{ id:'hr-performance', type:'skill', cat:'hr', en:'human-resources:performance-review', zh:'績效評估',
+  zhDesc:'協助績效評估：自評整理、回饋彙整、評語草稿。',
+  enDesc:'Performance reviews — self-assessments, feedback synthesis, drafts.',
+  trigger:'/human-resources:performance-review' },
+{ id:'hr-policy', type:'skill', cat:'hr', en:'human-resources:policy-lookup', zh:'政策查詢',
+  zhDesc:'查公司人資政策：假勤、福利、規範，附出處。',
+  enDesc:'Look up HR policies — leave, benefits, rules.',
+  trigger:'/human-resources:policy-lookup' },
+{ id:'hr-recruiting', type:'skill', cat:'hr', en:'human-resources:recruiting-pipeline', zh:'招聘管道管理',
+  zhDesc:'管理招聘 pipeline：各階段候選人、瓶頸、轉換率。',
+  enDesc:'Manage the recruiting pipeline — stages, bottlenecks, conversion.',
+  trigger:'/human-resources:recruiting-pipeline' },
+
+/* ── 財務 ── */
+{ id:'fin-statements', type:'skill', cat:'finance', en:'finance:financial-statements', zh:'財務報表',
+  zhDesc:'編製與分析三大報表：損益表、資產負債表、現金流量表。',
+  enDesc:'Prepare and analyze financial statements.',
+  trigger:'/finance:financial-statements' },
+{ id:'fin-variance', type:'skill', cat:'finance', en:'finance:variance-analysis', zh:'差異分析',
+  zhDesc:'分析實際 vs 預算的差異：原因拆解、趨勢、管理層說明。',
+  enDesc:'Variance analysis — actual vs budget with explanations.',
+  trigger:'/finance:variance-analysis' },
+{ id:'fin-journal', type:'skill', cat:'finance', en:'finance:journal-entry', zh:'會計分錄',
+  zhDesc:'處理會計分錄：建立、檢查借貸平衡、附憑證說明。',
+  enDesc:'Journal entries — creation, balance checks, documentation.',
+  trigger:'/finance:journal-entry' },
+{ id:'fin-journal-prep', type:'skill', cat:'finance', en:'finance:journal-entry-prep', zh:'分錄準備',
+  zhDesc:'月結前的分錄準備工作：應計、攤銷、調整項目。',
+  enDesc:'Prepare journal entries — accruals, amortization, adjustments.',
+  trigger:'/finance:journal-entry-prep' },
+{ id:'fin-recon', type:'skill', cat:'finance', en:'finance:reconciliation', zh:'帳務調節',
+  zhDesc:'對帳與調節：銀行對帳、科目餘額核對、差異追蹤。',
+  enDesc:'Reconciliation — bank recs, account balances, discrepancy tracking.',
+  trigger:'/finance:reconciliation' },
+{ id:'fin-close', type:'skill', cat:'finance', en:'finance:close-management', zh:'月結管理',
+  zhDesc:'管理月／季／年結流程：任務清單、時程、瓶頸追蹤。',
+  enDesc:'Manage the financial close process — checklists, timeline, blockers.',
+  trigger:'/finance:close-management' },
+{ id:'fin-sox', type:'skill', cat:'finance', en:'finance:sox-testing', zh:'SOX 控制測試',
+  zhDesc:'SOX 內控測試：控制點抽樣、測試底稿、缺失記錄。',
+  enDesc:'SOX control testing — sampling, workpapers, deficiency tracking.',
+  trigger:'/finance:sox-testing' },
+{ id:'fin-audit', type:'skill', cat:'finance', en:'finance:audit-support', zh:'審計支援',
+  zhDesc:'支援外部審計：PBC 清單、底稿準備、查核問題回覆。',
+  enDesc:'Audit support — PBC lists, workpapers, query responses.',
+  trigger:'/finance:audit-support' },
+
+/* ── 營運 ── */
+{ id:'ops-process-doc', type:'skill', cat:'ops', en:'operations:process-doc', zh:'流程文件',
+  zhDesc:'把工作流程寫成清楚的文件：步驟、負責人、例外處理。',
+  enDesc:'Document processes — steps, owners, exceptions.',
+  trigger:'/operations:process-doc' },
+{ id:'ops-optimization', type:'skill', cat:'ops', en:'operations:process-optimization', zh:'流程優化',
+  zhDesc:'分析既有流程找瓶頸與浪費，提出優化方案。',
+  enDesc:'Analyze processes for bottlenecks and propose optimizations.',
+  trigger:'/operations:process-optimization' },
+{ id:'ops-runbook', type:'skill', cat:'ops', en:'operations:runbook', zh:'操作手冊',
+  zhDesc:'撰寫 runbook：標準操作程序、故障排除步驟、緊急應變。',
+  enDesc:'Write runbooks — SOPs, troubleshooting, emergency procedures.',
+  trigger:'/operations:runbook' },
+{ id:'ops-status', type:'skill', cat:'ops', en:'operations:status-report', zh:'營運狀態報告',
+  zhDesc:'產出營運狀態報告：指標、事件、風險與行動項目。',
+  enDesc:'Operations status reports — metrics, incidents, risks.',
+  trigger:'/operations:status-report' },
+{ id:'ops-capacity', type:'skill', cat:'ops', en:'operations:capacity-plan', zh:'容量規劃',
+  zhDesc:'規劃資源容量：需求預測、人力／系統配置、緩衝策略。',
+  enDesc:'Capacity planning — demand forecasting, resourcing, buffers.',
+  trigger:'/operations:capacity-plan' },
+{ id:'ops-change', type:'skill', cat:'ops', en:'operations:change-request', zh:'變更管理',
+  zhDesc:'處理變更請求：影響評估、核准流程、回滾計畫。',
+  enDesc:'Change requests — impact assessment, approvals, rollback plans.',
+  trigger:'/operations:change-request' },
+{ id:'ops-compliance', type:'skill', cat:'ops', en:'operations:compliance-tracking', zh:'法遵追蹤',
+  zhDesc:'追蹤法遵要求的完成狀態：證據收集、到期提醒、缺口分析。',
+  enDesc:'Track compliance requirements — evidence, deadlines, gaps.',
+  trigger:'/operations:compliance-tracking' },
+{ id:'ops-risk', type:'skill', cat:'ops', en:'operations:risk-assessment', zh:'營運風險評估',
+  zhDesc:'評估營運風險：識別、分級、緩解措施與監控。',
+  enDesc:'Operational risk assessment — identification, rating, mitigation.',
+  trigger:'/operations:risk-assessment' },
+{ id:'ops-vendor', type:'skill', cat:'ops', en:'operations:vendor-review', zh:'廠商評估',
+  zhDesc:'評估與審查廠商：表現、合約、風險、續約建議。',
+  enDesc:'Vendor reviews — performance, contracts, risk, renewal advice.',
+  trigger:'/operations:vendor-review' },
+
+/* ── 資料分析 ── */
+{ id:'data-analyze', type:'skill', cat:'data', en:'data:analyze', zh:'資料分析',
+  zhDesc:'對資料集做完整分析：清理、探索、統計、結論。把資料丟給它就對了。',
+  enDesc:'Full data analysis — cleaning, exploration, statistics, conclusions.',
+  trigger:'/data:analyze 或丟資料檔' },
+{ id:'data-explore', type:'skill', cat:'data', en:'data:explore-data', zh:'資料探索',
+  zhDesc:'快速摸清一份資料：欄位、分佈、異常值、缺失情況。',
+  enDesc:'Explore datasets — fields, distributions, outliers, missing data.',
+  trigger:'/data:explore-data' },
+{ id:'data-viz', type:'skill', cat:'data', en:'data:create-viz', zh:'資料視覺化',
+  zhDesc:'把數據畫成對的圖：選對圖表類型、配色、標註重點。',
+  enDesc:'Create data visualizations with the right chart types.',
+  trigger:'/data:create-viz' },
+{ id:'data-dataviz', type:'skill', cat:'data', en:'data:data-visualization', zh:'視覺化規範',
+  zhDesc:'資料視覺化的方法論：何時用什麼圖、如何避免誤導。',
+  enDesc:'Data visualization methodology and best practices.',
+  trigger:'/data:data-visualization' },
+{ id:'data-dashboard', type:'skill', cat:'data', en:'data:build-dashboard', zh:'儀表板建構',
+  zhDesc:'建互動式 dashboard：指標選擇、版面、即時更新。',
+  enDesc:'Build interactive dashboards — metrics, layout, live updates.',
+  trigger:'/data:build-dashboard' },
+{ id:'data-sql', type:'skill', cat:'data', en:'data:sql-queries', zh:'SQL 查詢',
+  zhDesc:'寫與優化 SQL：複雜 join、window function、效能調校。',
+  enDesc:'Write and optimize SQL queries.',
+  trigger:'/data:sql-queries' },
+{ id:'data-write-query', type:'skill', cat:'data', en:'data:write-query', zh:'查詢撰寫',
+  zhDesc:'把自然語言需求轉成正確的資料查詢。',
+  enDesc:'Translate natural language into correct data queries.',
+  trigger:'/data:write-query' },
+{ id:'data-stats', type:'skill', cat:'data', en:'data:statistical-analysis', zh:'統計分析',
+  zhDesc:'統計檢定與建模：假設檢定、迴歸、顯著性判讀。',
+  enDesc:'Statistical analysis — hypothesis testing, regression, significance.',
+  trigger:'/data:statistical-analysis' },
+{ id:'data-validate', type:'skill', cat:'data', en:'data:validate-data', zh:'資料驗證',
+  zhDesc:'驗證資料品質：一致性、完整性、合理性檢查。',
+  enDesc:'Validate data quality — consistency, completeness, sanity checks.',
+  trigger:'/data:validate-data' },
+{ id:'data-context', type:'skill', cat:'data', en:'data:data-context-extractor', zh:'資料脈絡萃取',
+  zhDesc:'從資料庫 schema 與既有查詢萃取業務脈絡，讓分析建立在正確理解上。',
+  enDesc:'Extract business context from schemas and existing queries.',
+  trigger:'/data:data-context-extractor' },
+
+/* ── 系統・設定 ── */
+{ id:'update-config', type:'skill', cat:'system', en:'update-config', zh:'Claude Code 設定',
+  zhDesc:'設定 Claude Code 本身：權限 allowlist、環境變數、hooks 自動化（「每次 X 之後自動 Y」這種需求）。',
+  enDesc:'Configure the Claude Code harness via settings.json — permissions, env vars, hooks.',
+  trigger:'「允許 npm 指令／每次存檔後自動 X」' },
+{ id:'keybindings-help', type:'skill', cat:'system', en:'keybindings-help', zh:'快捷鍵設定',
+  zhDesc:'自訂 Claude Code 的鍵盤快捷鍵與 chord 綁定。',
+  enDesc:'Customize keyboard shortcuts in ~/.claude/keybindings.json.',
+  trigger:'「改一下快捷鍵」' },
+{ id:'fewer-prompts', type:'skill', cat:'system', en:'fewer-permission-prompts', zh:'減少權限詢問',
+  zhDesc:'掃描你的使用記錄，找出常用的唯讀指令加進 allowlist，減少每次都要按確認的麻煩。',
+  enDesc:'Scan transcripts and add a prioritized allowlist to reduce permission prompts.',
+  trigger:'/fewer-permission-prompts' },
+{ id:'plugin-customizer', type:'skill', cat:'system', en:'cowork-plugin-customizer', zh:'Plugin 客製化',
+  zhDesc:'把現成的 Claude plugin 調整成符合你組織的工具與流程。',
+  enDesc:'Customize a Claude Code plugin for your organization’s tools.',
+  trigger:'「客製化這個 plugin」' },
+{ id:'create-plugin', type:'skill', cat:'system', en:'create-cowork-plugin', zh:'建立新 Plugin',
+  zhDesc:'從零打造一個新的 Claude plugin：引導式流程，產出 .plugin 檔。',
+  enDesc:'Guide through creating a new plugin from scratch.',
+  trigger:'「我要做一個新 plugin」' },
+
+/* ════════ 下篇 MCP ════════ */
+
+/* ── 設計工具 ── */
+{ id:'mcp-figma', type:'mcp', cat:'m-design', en:'Figma', zh:'設計稿雙向同步',
+  zhDesc:'官方 Figma MCP：讀設計稿轉 code、把畫面寫進 Figma、生成 FigJam 圖表、操作元件庫與變數。貼 Figma 連結就會啟動。',
+  enDesc:'Official Figma MCP — read designs into code, write designs into Figma, FigJam diagrams, design systems.',
+  gain:'這是所有 Figma skills 的引擎：有它 Claude 才能真的「看到」和「動到」你的 Figma。設計稿轉 code、code 轉設計稿、整理元件庫、畫 FigJam 流程圖，全部一條龍。',
+  trigger:'貼 Figma 連結，或「做進 Figma」' },
+{ id:'mcp-pencil', type:'mcp', cat:'m-design', en:'Pencil', zh:'.pen 設計檔編輯器',
+  zhDesc:'讀寫 .pen 設計檔的專用編輯器：產生與驗證 web/mobile 設計、套 style guide、批次改屬性。',
+  enDesc:'Editor for .pen design files — generate and validate app/web designs with style guides.',
+  trigger:'開啟或建立 .pen 檔案' },
+{ id:'mcp-canva', type:'mcp', cat:'m-design', en:'Canva', zh:'Canva 設計生成',
+  zhDesc:'在 Canva 生成與編輯設計：簡報、社群貼文、海報，可用品牌模板、匯出檔案、處理評論。',
+  enDesc:'Generate and edit Canva designs — presentations, social posts, posters, brand templates, export.',
+  trigger:'「用 Canva 做一張／一份 X」' },
+{ id:'mcp-mobbin', type:'mcp', cat:'m-design', en:'Mobbin', zh:'設計參考資料庫',
+  zhDesc:'Mobbin 的 UI/UX 參考庫連接器：查真實產品的設計模式與畫面截圖（需先驗證登入）。',
+  enDesc:'Mobbin design reference library connector (requires authentication).',
+  trigger:'「找一些 X 類 app 的設計參考」' },
+
+/* ── 辦公協作 ── */
+{ id:'mcp-gmail', type:'mcp', cat:'m-office', en:'Gmail', zh:'郵件管理',
+  zhDesc:'搜尋信件與討論串、讀取內容、建立草稿、管理標籤。「幫我找那封關於 X 的信」「草擬回覆」都靠它。',
+  enDesc:'Search threads, read mail, create drafts, manage labels in Gmail.',
+  trigger:'「找信／草擬一封信」' },
+{ id:'mcp-calendar', type:'mcp', cat:'m-office', en:'Google Calendar', zh:'行事曆管理',
+  zhDesc:'查行程、建立／修改／刪除活動、回覆邀請、找大家都有空的時段。',
+  enDesc:'List events, create/update/delete events, respond to invites, suggest times.',
+  trigger:'「我明天有什麼行程／約一個會」' },
+{ id:'mcp-drive', type:'mcp', cat:'m-office', en:'Google Drive', zh:'雲端硬碟',
+  zhDesc:'搜尋與讀取 Drive 檔案、看最近文件、下載內容、查權限、建立與複製檔案。',
+  enDesc:'Search, read, create, and copy files in Google Drive; check permissions.',
+  trigger:'「在我的 Drive 找 X」' },
+{ id:'mcp-notion', type:'mcp', cat:'m-office', en:'Notion', zh:'Notion 工作區',
+  zhDesc:'搜尋、建立、更新 Notion 頁面與資料庫，加評論、管理視圖。產出直接寫進你的工作區。',
+  enDesc:'Search, create, and update Notion pages and databases; comments and views.',
+  trigger:'「存到 Notion／查我的 Notion」' },
+{ id:'mcp-atlassian', type:'mcp', cat:'m-office', en:'Atlassian', zh:'Jira 與 Confluence',
+  zhDesc:'完整的 Jira／Confluence 操作：搜尋與建立 issue、轉換狀態、寫 Confluence 頁面、JQL/CQL 查詢。',
+  enDesc:'Full Jira/Confluence operations — issues, transitions, pages, JQL/CQL search.',
+  trigger:'「開一張 Jira 票／更新 Confluence」' },
+{ id:'mcp-scheduled', type:'mcp', cat:'m-office', en:'Scheduled Tasks', zh:'排程任務管理',
+  zhDesc:'管理你的排程雲端任務：列出、建立、更新定期執行的自動化。',
+  enDesc:'Manage scheduled cloud tasks — list, create, update recurring automations.',
+  trigger:'「我有哪些排程任務」' },
+{ id:'mcp-sessions', type:'mcp', cat:'m-office', en:'Session Management', zh:'對話 Session 管理',
+  zhDesc:'管理 Claude 的工作 sessions：列出、搜尋過往對話記錄、跨 session 傳訊息。',
+  enDesc:'Manage Claude sessions — list, search transcripts, send messages across sessions.',
+  trigger:'「找我上次那個對話」' },
+
+/* ── 瀏覽器・電腦控制 ── */
+{ id:'mcp-chrome', type:'mcp', cat:'m-browser', en:'Claude in Chrome', zh:'瀏覽器操作',
+  zhDesc:'操作你的 Chrome：開網頁、點按鈕、填表單、讀頁面內容與 console、截圖。網頁上的事都可以請它代勞。',
+  enDesc:'Drive Chrome — navigate, click, fill forms, read pages and console, screenshots.',
+  trigger:'「幫我打開／操作這個網站」' },
+{ id:'mcp-computer', type:'mcp', cat:'m-browser', en:'Computer Use', zh:'桌面控制',
+  zhDesc:'控制整台電腦：截圖看畫面、滑鼠鍵盤操作原生 app（地圖、備忘錄、系統設定）。瀏覽器以外的桌面操作用它。',
+  enDesc:'Control the desktop — screenshots, mouse/keyboard for native apps.',
+  trigger:'「幫我操作 X app」' },
+{ id:'mcp-preview', type:'mcp', cat:'m-browser', en:'Claude Preview', zh:'開發預覽',
+  zhDesc:'啟動 dev server 並檢查頁面：截圖、查 DOM、讀 console、模擬操作。開發網頁時 Claude 用它自己驗證成果（這本書就是這樣做的）。',
+  enDesc:'Start dev servers and inspect pages — screenshots, DOM, console, interactions.',
+  trigger:'開發網頁時自動使用' },
+{ id:'mcp-visualize', type:'mcp', cat:'m-browser', en:'Visualize', zh:'對話內圖表',
+  zhDesc:'在對話裡直接渲染視覺內容：SVG 圖表、流程圖、互動 widget、儀表板。',
+  enDesc:'Render inline visuals — SVG diagrams, charts, interactive widgets.',
+  trigger:'「畫一張圖／圖表給我看」' },
+
+/* ── 行銷・資料 ── */
+{ id:'mcp-meta-ads', type:'mcp', cat:'m-data', en:'Meta Ads', zh:'Meta 廣告管理',
+  zhDesc:'完整的 Meta（Facebook/IG）廣告操作：建立 campaign／adset／廣告、查成效 insights、受眾估算、搜尋廣告檔案庫。',
+  enDesc:'Full Meta Ads management — campaigns, creatives, insights, audience estimation.',
+  trigger:'「看一下廣告成效／開一檔廣告」' },
+{ id:'mcp-hf', type:'mcp', cat:'m-data', en:'Hugging Face', zh:'AI 模型與論文',
+  zhDesc:'查 Hugging Face Hub：搜模型、資料集、Spaces、論文，讀官方文件。研究 AI 模型生態用它。',
+  enDesc:'Query the Hugging Face Hub — models, datasets, Spaces, papers, docs.',
+  trigger:'「找一個做 X 的模型／這篇論文」' },
+{ id:'mcp-registry', type:'mcp', cat:'m-data', en:'MCP Registry', zh:'連接器市集',
+  zhDesc:'搜尋還有哪些 MCP 連接器可以裝：依用途推薦、列出全部可用服務。想擴充這本書的下篇就靠它。',
+  enDesc:'Search the MCP registry — discover and suggest new connectors to install.',
+  trigger:'「有沒有 X 的連接器可以裝」' },
+
+/* ── 可連接服務（需先驗證） ── */
+{ id:'conn-engineering', type:'mcp', cat:'m-connect', en:'GitHub · Datadog · PagerDuty', zh:'工程連接器',
+  zhDesc:'Engineering 套件的連接器：GitHub（程式碼與 PR）、Datadog（監控）、PagerDuty（on-call）。用前先驗證授權。',
+  enDesc:'Engineering connectors — GitHub, Datadog, PagerDuty (authentication required).',
+  trigger:'「連接 GitHub／Datadog」' },
+{ id:'conn-productivity', type:'mcp', cat:'m-connect', en:'Linear · Asana · ClickUp · Monday', zh:'專案管理連接器',
+  zhDesc:'生產力套件的連接器：Linear、Asana、ClickUp、Monday 等專案管理工具。',
+  enDesc:'Project management connectors — Linear, Asana, ClickUp, Monday.',
+  trigger:'「連接 Linear／Asana」' },
+{ id:'conn-marketing', type:'mcp', cat:'m-connect', en:'Ahrefs · Klaviyo · Similarweb · Supermetrics', zh:'行銷數據連接器',
+  zhDesc:'行銷套件的連接器：SEO（Ahrefs）、Email（Klaviyo）、流量分析（Similarweb）、數據彙整（Supermetrics）。',
+  enDesc:'Marketing connectors — Ahrefs, Klaviyo, Similarweb, Supermetrics.',
+  trigger:'「連接 Ahrefs／Klaviyo」' },
+{ id:'conn-support', type:'mcp', cat:'m-connect', en:'HubSpot · Intercom · Guru', zh:'客服 CRM 連接器',
+  zhDesc:'客服套件的連接器：HubSpot（CRM）、Intercom（客服對話）、Guru（知識庫）。',
+  enDesc:'Support connectors — HubSpot, Intercom, Guru.',
+  trigger:'「連接 HubSpot／Intercom」' },
+{ id:'conn-data', type:'mcp', cat:'m-connect', en:'BigQuery · Hex · Definite', zh:'資料倉儲連接器',
+  zhDesc:'資料套件的連接器：BigQuery（資料倉儲）、Hex（notebook）、Definite（BI）。',
+  enDesc:'Data connectors — BigQuery, Hex, Definite.',
+  trigger:'「連接 BigQuery」' },
+{ id:'conn-pm', type:'mcp', cat:'m-connect', en:'Amplitude · Pendo · Fireflies', zh:'產品數據連接器',
+  zhDesc:'產品管理套件的連接器：Amplitude（產品分析）、Pendo（使用行為）、Fireflies（會議記錄）。',
+  enDesc:'Product connectors — Amplitude, Pendo, Fireflies.',
+  trigger:'「連接 Amplitude」' },
+{ id:'conn-legal', type:'mcp', cat:'m-connect', en:'Box · DocuSign · Egnyte · Slack', zh:'法務文件連接器',
+  zhDesc:'法務套件的連接器：Box／Egnyte（文件庫）、DocuSign（電子簽）、Slack（溝通記錄）。',
+  enDesc:'Legal connectors — Box, DocuSign, Egnyte, Slack.',
+  trigger:'「連接 DocuSign」' },
+{ id:'conn-sales', type:'mcp', cat:'m-connect', en:'Apollo · Common Room · Gong · Granola', zh:'銷售情報連接器',
+  zhDesc:'銷售相關連接器：Apollo（B2B 名單）、Common Room（社群訊號）、Gong／Granola（通話與會議記錄）。',
+  enDesc:'Sales connectors — Apollo, Common Room, Gong, Granola.',
+  trigger:'「連接 Apollo／Gong」' },
+];
+
+/* 章節定義 */
+const PARTS = [
+  { key:'skill', title:'上篇 · Skills', en:'Part I — Skills',
+    desc:'指令技能：在對話裡用「/名稱」或自然語句觸發的能力。',
+    chapters:[
+      { key:'design', name:'設計' },
+      { key:'figmaplus', name:'Figma 擴充' },
+      { key:'frontend', name:'前端・動畫' },
+      { key:'engineering', name:'工程開發' },
+      { key:'docs', name:'文件・簡報' },
+      { key:'productivity', name:'生產力・知識' },
+      { key:'pm', name:'產品管理' },
+      { key:'marketing', name:'行銷・品牌' },
+      { key:'sales', name:'業務・客服' },
+      { key:'collab', name:'團隊協作' },
+      { key:'legal', name:'法務' },
+      { key:'hr', name:'人資' },
+      { key:'finance', name:'財務' },
+      { key:'ops', name:'營運' },
+      { key:'data', name:'資料分析' },
+      { key:'system', name:'系統・設定' },
+      { key:'imported', name:'新收錄' },
+    ]},
+  { key:'mcp', title:'下篇 · MCP', en:'Part II — Connected Services',
+    desc:'連接服務：Claude 可直接操作的外部工具與平台。',
+    chapters:[
+      { key:'m-design', name:'設計工具' },
+      { key:'m-office', name:'辦公協作' },
+      { key:'m-browser', name:'瀏覽器・電腦控制' },
+      { key:'m-data', name:'行銷・資料' },
+      { key:'m-connect', name:'可連接服務' },
+      { key:'m-imported', name:'新收錄' },
+    ]},
+];
+
+const NUMS = ['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hidden = new Set(JSON.parse(localStorage.getItem('toolbook-hidden') || '[]'));
+
+/* ====== 已匯入項目：開機時從 localStorage 合併進 DATA ====== */
+
+let importedEntries = [];
+try { importedEntries = JSON.parse(localStorage.getItem('toolbook-imported') || '[]'); }
+catch { importedEntries = []; }
+importedEntries = importedEntries.filter(e => e && e.id);
+importedEntries.forEach(e => {
+  if (!DATA.some(d => d.id === e.id)) DATA.push(e);
+});
+const view = document.getElementById('view');
+let currentChapter = null;
+
+const D = (t) => reduceMotion ? 0 : t;
+
+function entriesFor(partKey, catKey) {
+  return DATA.filter(d => d.type === partKey && d.cat === catKey && !hidden.has(d.id));
+}
+
+/* ====== 廠商標注 ====== */
+
+const VENDOR_BY_ID = {
+  'mcp-figma':'Figma', 'mcp-pencil':'Pencil', 'mcp-canva':'Canva', 'mcp-mobbin':'Mobbin',
+  'mcp-gmail':'Google', 'mcp-calendar':'Google', 'mcp-drive':'Google',
+  'mcp-notion':'Notion', 'mcp-atlassian':'Atlassian',
+  'mcp-chrome':'Google Chrome', 'mcp-meta-ads':'Meta', 'mcp-hf':'Hugging Face',
+  'conn-engineering':'GitHub・Datadog・PagerDuty', 'conn-productivity':'Linear・Asana 等',
+  'conn-marketing':'Ahrefs・Klaviyo 等', 'conn-support':'HubSpot・Intercom 等',
+  'conn-data':'Google・Hex 等', 'conn-pm':'Amplitude・Pendo 等',
+  'conn-legal':'Box・DocuSign 等', 'conn-sales':'Apollo・Gong 等',
+  'jean-design-style':'個人自製', 'jean-frontend-workflow':'個人自製',
+};
+
+function vendorOf(item) {
+  if (item.imported) return '本機匯入';
+  if (VENDOR_BY_ID[item.id]) return VENDOR_BY_ID[item.id];
+  if (item.id.startsWith('fc-')) return 'Figma Community';
+  const en = item.en.toLowerCase();
+  if (en.startsWith('figma:')) return 'Figma';
+  if (en.startsWith('gsap')) return 'GSAP';
+  if (en.startsWith('atlassian:')) return 'Atlassian';
+  if (en.startsWith('slack:')) return 'Slack';
+  if (en.startsWith('apollo:')) return 'Apollo';
+  if (en.startsWith('common-room:')) return 'Common Room';
+  return 'Anthropic';
+}
+
+/* ====== 主題切換 ====== */
+
+const themeToggle = document.getElementById('themeToggle');
+const iconSun = document.getElementById('iconSun');
+const iconMoon = document.getElementById('iconMoon');
+
+function applyTheme(theme, animate) {
+  document.documentElement.dataset.theme = theme;
+  iconSun.style.display = theme === 'dark' ? 'none' : '';
+  iconMoon.style.display = theme === 'dark' ? '' : 'none';
+  localStorage.setItem('toolbook-theme', theme);
+  if (animate) gsap.fromTo(themeToggle, { rotation: -40, scale: 0.85 }, { rotation: 0, scale: 1, duration: D(0.5), ease: 'back.out(2)' });
+}
+
+themeToggle.addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(next, true);
+});
+
+applyTheme(
+  localStorage.getItem('toolbook-theme') ||
+  (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+  false
+);
+
+/* ====== 目錄頁 ====== */
+
+function renderToc(animate = true) {
+  currentChapter = null;
+  pageIndex = 0;
+  window.setHero?.({ type: 'toc' });
+  view.innerHTML = '';
+  const toc = document.createElement('nav');
+  toc.className = 'toc';
+
+  PARTS.forEach(part => {
+    const chapters = part.chapters
+      .map(ch => ({ ...ch, items: entriesFor(part.key, ch.key) }))
+      .filter(ch => ch.items.length > 0);
+    if (!chapters.length) return;
+
+    const el = document.createElement('div');
+    el.className = 'toc-part';
+    el.innerHTML = `
+      <h2 class="toc-part-title">${part.title} <span class="en">${part.en}</span></h2>
+      <p class="toc-part-desc">${part.desc}</p>`;
+    chapters.forEach((ch, idx) => {
+      const row = document.createElement('button');
+      row.className = 'toc-row';
+      row.innerHTML = `
+        <span class="toc-num">${NUMS[idx]}</span>
+        <span class="toc-name">${ch.name}</span>
+        <span class="toc-arrow">→</span>
+        <span class="toc-dots"></span>
+        <span class="toc-count">${ch.items.length}</span>`;
+      row.addEventListener('click', () => openChapter(part, ch, idx));
+      el.appendChild(row);
+    });
+    toc.appendChild(el);
+  });
+
+  view.appendChild(toc);
+  if (typeof updateMiniState === 'function') updateMiniState();
+  if (animate) {
+    gsap.from(toc.querySelectorAll('.toc-part'), { autoAlpha: 0, y: 18, duration: D(0.6), stagger: 0.12, ease: 'power3.out' });
+    gsap.from(toc.querySelectorAll('.toc-row'), { autoAlpha: 0, x: -10, duration: D(0.45), stagger: 0.025, ease: 'power2.out', delay: 0.15 });
+  }
+}
+
+/* ====== 書頁模型：目錄是第 0 頁，之後依序是每一章 ====== */
+
+let pageIndex = 0;
+
+function buildPages() {
+  const list = [{ type: 'toc' }];
+  PARTS.forEach(part => {
+    let d = 0;
+    part.chapters.forEach(ch => {
+      if (entriesFor(part.key, ch.key).length) {
+        list.push({ type: 'chapter', part, ch, dispIdx: d });
+        d++;
+      }
+    });
+  });
+  return list;
+}
+
+function renderPage(p) {
+  if (p.type === 'toc') renderToc();
+  else renderChapter(p.part, p.ch, p.dispIdx);
+}
+
+/* ====== 換頁轉場：柔和淡入淡出＋一點方向感 ====== */
+/* dir 1＝往前（下一頁），-1＝往回（上一頁） */
+
+function goToPage(i, dir) {
+  const pages = buildPages();
+  if (i < 0 || i >= pages.length) return;
+  if (reduceMotion) { renderPage(pages[i]); return; }
+  const old = view.firstElementChild;
+  if (!old) { renderPage(pages[i]); return; }
+  gsap.to(old, {
+    autoAlpha: 0, x: dir * -20, duration: 0.28, ease: 'power2.in',
+    onComplete: () => {
+      renderPage(pages[i]);
+      gsap.from(view.firstElementChild, { autoAlpha: 0, x: dir * 20, duration: 0.4, ease: 'power3.out', clearProps: 'transform' });
+    }
+  });
+}
+
+/* ====== 章節頁 ====== */
+
+function openChapter(part, ch) {
+  const pages = buildPages();
+  const i = pages.findIndex(p => p.type === 'chapter' && p.part.key === part.key && p.ch.key === ch.key);
+  goToPage(i, 1);
+}
+
+function renderChapter(part, ch, idx) {
+  currentChapter = { part, ch, idx };
+  pageIndex = buildPages().findIndex(p => p.type === 'chapter' && p.part.key === part.key && p.ch.key === ch.key);
+  window.setHero?.({ type: 'chapter', part, ch, dispIdx: idx });
+  const items = entriesFor(part.key, ch.key);
+  view.innerHTML = '';
+
+  const sec = document.createElement('section');
+  sec.className = 'chapter';
+  const isImportedCh = ch.key === 'imported' || ch.key === 'm-imported';
+  sec.innerHTML = `
+    <div class="chapter-bar">
+      <button class="back-btn">← 回目錄</button>
+      <span class="chapter-tools">
+        ${isImportedCh ? `
+          <button class="sync-add js-tr-copy">複製翻譯 Prompt</button>
+          <button class="sync-add js-tr-paste">貼上翻譯結果</button>` : ''}
+        <span class="chapter-count">${part.key === 'skill' ? 'SKILLS' : 'MCP'} · ${items.length}</span>
+      </span>
+    </div>`;
+  items.forEach(item => sec.appendChild(makeEntry(item)));
+  view.appendChild(sec);
+
+  sec.querySelector('.back-btn').addEventListener('click', () => goToPage(0, -1));
+
+  if (isImportedCh) {
+    sec.querySelector('.js-tr-copy').addEventListener('click', () => {
+      const untranslated = items.filter(i => /中文介紹待補/.test(i.zhDesc));
+      if (!untranslated.length) { snack('沒有待翻譯的項目'); return; }
+      copyText(buildTranslatePrompt(untranslated), `已複製 ${untranslated.length} 項的翻譯 Prompt，貼給 Claude 即可`);
+    });
+    sec.querySelector('.js-tr-paste').addEventListener('click', openTranslatePaste);
+  }
+
+  window.scrollTo({ top: 0 });
+  if (typeof updateMiniState === 'function') updateMiniState();
+  gsap.from(sec.querySelector('.chapter-bar'), { autoAlpha: 0, y: 10, duration: D(0.5), ease: 'power3.out' });
+  gsap.from(sec.querySelectorAll('.entry'), { autoAlpha: 0, y: 16, duration: D(0.5), stagger: 0.05, ease: 'power2.out', delay: 0.1 });
+}
+
+/* ====== 詞條 ====== */
+
+/* 移除教學：產生一段可以直接貼給 Claude 的移除指令 */
+function removePrompt(item) {
+  if (item.type === 'skill') {
+    return `請幫我移除「${item.en}」這個 skill（在 ~/.claude/skills/ 底下），移除前先告訴我會刪掉哪些檔案。`;
+  }
+  return `請幫我移除「${item.en}」這個 MCP／plugin 連接，移除前先告訴我會動到哪些設定。`;
+}
+
+/* 匯入詞條的中文介紹編輯器 */
+function openEntryEditor(item, el) {
+  const inner = el.querySelector('.entry-detail-inner');
+  if (inner.querySelector('.edit-form')) return;   /* 已開著就不重複 */
+  const form = document.createElement('div');
+  form.className = 'edit-form';
+  form.innerHTML = `
+    <p class="detail-label">中文名稱</p>
+    <input class="edit-zh" maxlength="20" value="${esc(item.zh)}">
+    <p class="detail-label">中文介紹</p>
+    <textarea class="edit-zhdesc" rows="3">${esc(item.zhDesc)}</textarea>
+    <div class="entry-actions">
+      <button class="btn-ghost js-save">儲存</button>
+      <button class="btn-ghost js-cancel">取消</button>
+    </div>`;
+  inner.appendChild(form);
+  gsap.from(form, { autoAlpha: 0, y: 8, duration: D(0.3), ease: 'power2.out' });
+
+  form.querySelector('.js-cancel').addEventListener('click', () => form.remove());
+  form.querySelector('.js-save').addEventListener('click', () => {
+    const zh = form.querySelector('.edit-zh').value.trim();
+    const zhDesc = form.querySelector('.edit-zhdesc').value.trim();
+    if (zh) item.zh = zh;
+    if (zhDesc) item.zhDesc = zhDesc;
+    /* importedEntries 與 DATA 共用同一個物件參照，存檔即可 */
+    safeStore('toolbook-imported', JSON.stringify(importedEntries));
+    el.querySelector('.entry-zh-sub').textContent = item.zh;
+    el.querySelector('.entry-desc').textContent = item.zhDesc;
+    form.remove();
+    snack('已儲存中文介紹');
+  });
+}
+
+function makeEntry(item) {
+  const el = document.createElement('article');
+  el.className = 'entry';
+  el.innerHTML = `
+    <div class="entry-head">
+      <h3 class="entry-en-title">${item.en}</h3>
+      <span class="entry-type ${item.type}">${item.type === 'skill' ? 'Skill' : 'MCP'}</span>
+      <span class="entry-vendor">${vendorOf(item)}</span>
+      ${item.on ? `<span class="entry-on">→ ${item.on}</span>` : ''}
+      <svg class="entry-chevron" viewBox="0 0 16 16" fill="none">
+        <path d="M5 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="entry-zh-sub">${item.zh}</p>
+    <p class="entry-desc">${item.zhDesc}</p>
+    <div class="entry-detail">
+      <div class="entry-detail-inner">
+        <div class="detail-block">
+          <p class="detail-label">English</p>
+          <p>${item.enDesc}</p>
+        </div>
+        ${item.gain ? `<div class="detail-block">
+          <p class="detail-label">能幫你解決 · What it solves</p>
+          <p>${item.gain}</p>
+        </div>` : ''}
+        <div class="detail-block">
+          <p class="detail-label">怎麼觸發 · How to trigger</p>
+          <button class="trigger-pill js-copy" title="點擊複製">${item.trigger}</button>
+        </div>
+        <div class="detail-block">
+          <p class="detail-label">怎麼移除 · How to remove（複製貼給 Claude）</p>
+          <button class="trigger-pill remove-pill js-copy" title="點擊複製">${esc(removePrompt(item))}</button>
+        </div>
+        <div class="entry-actions">
+          ${item.imported ? '<button class="btn-ghost js-edit">編輯中文介紹</button>' : ''}
+          <button class="btn-ghost js-hide">隱藏這個功能</button>
+        </div>
+      </div>
+    </div>`;
+
+  const detail = el.querySelector('.entry-detail');
+  const chevron = el.querySelector('.entry-chevron');
+  let open = false;
+
+  el.addEventListener('click', (e) => {
+    if (e.target.closest('button, input, textarea, .edit-form')) return;
+    open = !open;
+    gsap.to(detail, { height: open ? 'auto' : 0, duration: D(0.45), ease: open ? 'power3.out' : 'power3.inOut' });
+    gsap.to(chevron, { rotation: open ? 180 : 0, duration: D(0.35), ease: 'power2.out' });
+  });
+
+  el.addEventListener('mouseenter', () => {
+    gsap.to(el.querySelector('.entry-en-title'), { x: 3, duration: D(0.3), ease: 'power2.out' });
+  });
+  el.addEventListener('mouseleave', () => {
+    gsap.to(el.querySelector('.entry-en-title'), { x: 0, duration: D(0.35), ease: 'power2.out' });
+  });
+
+  el.querySelectorAll('.js-copy').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      gsap.fromTo(e.currentTarget, { scale: 0.94 }, { scale: 1, duration: D(0.4), ease: 'back.out(2.5)' });
+      copyText(btn.textContent);
+    });
+  });
+
+  el.querySelector('.js-edit')?.addEventListener('click', () => openEntryEditor(item, el));
+
+  el.querySelector('.js-hide').addEventListener('click', () => {
+    hidden.add(item.id);
+    safeStore('toolbook-hidden', JSON.stringify([...hidden]));
+    gsap.to(el, {
+      autoAlpha: 0, height: 0, paddingTop: 0, paddingBottom: 0, duration: D(0.4), ease: 'power3.inOut',
+      onComplete: () => { el.remove(); updateHiddenUI(); }
+    });
+    showToast('已隱藏，可在頁尾復原');
+  });
+
+  return el;
+}
+
+/* ====== 搜尋（主搜尋框與迷你 header 搜尋框共用）====== */
+
+const searchInput = document.getElementById('search');
+const miniSearch = document.getElementById('miniSearch');
+
+function doSearch(qRaw) {
+  const q = qRaw.trim().toLowerCase();
+  if (!q) { renderToc(); updateMiniState(); return; }
+  window.setHero?.({ type: 'toc' });   /* 搜尋時恢復首頁標題 */
+
+  const hits = DATA.filter(d => !hidden.has(d.id) &&
+    `${d.zh} ${d.en} ${d.zhDesc} ${d.enDesc} ${d.trigger}`.toLowerCase().includes(q));
+
+  view.innerHTML = '';
+  const sec = document.createElement('section');
+  sec.className = 'chapter';
+  sec.innerHTML = `
+    <button class="back-btn">← 回目錄</button>
+    <div class="result-head">「<span class="q">${qRaw.trim().replace(/[<>&]/g, '')}</span>」的搜尋結果 · ${hits.length}</div>`;
+  if (hits.length) {
+    hits.forEach(item => sec.appendChild(makeEntry(item)));
+  } else {
+    const p = document.createElement('p');
+    p.className = 'empty';
+    p.textContent = '找不到符合的功能，換個關鍵字試試。';
+    sec.appendChild(p);
+  }
+  view.appendChild(sec);
+  sec.querySelector('.back-btn').addEventListener('click', goHome);
+  gsap.from(sec.querySelectorAll('.entry'), { autoAlpha: 0, y: 10, duration: D(0.35), stagger: 0.03, ease: 'power2.out' });
+  currentChapter = { search: true };
+  updateMiniState();
+}
+
+function goHome() {
+  searchInput.value = '';
+  miniSearch.value = '';
+  goToPage(0, -1);
+  updateMiniState();
+}
+
+searchInput.addEventListener('input', () => { miniSearch.value = searchInput.value; doSearch(searchInput.value); });
+miniSearch.addEventListener('input', () => { searchInput.value = miniSearch.value; doSearch(miniSearch.value); });
+
+/* ====== 迷你固定 Header ====== */
+
+const mini = document.getElementById('mini');
+const miniBack = document.getElementById('miniBack');
+let miniShown = false;
+
+miniBack.addEventListener('click', goHome);
+document.getElementById('miniTitle').addEventListener('click', () => {
+  goHome();
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+});
+
+function updateMiniState() {
+  miniBack.classList.toggle('is-visible', !!currentChapter);
+}
+
+gsap.set(mini, { y: 0, yPercent: -100, autoAlpha: 0 });
+
+function syncMini(force) {
+  const should = window.scrollY > 360;
+  if (!force && should === miniShown) return;
+  miniShown = should;
+
+  /* 主題切換鈕收進 / 移出 liquid glass 膠囊 */
+  if (should) {
+    mini.querySelector('.mini-inner').appendChild(themeToggle);
+    themeToggle.classList.add('in-mini');
+  } else {
+    document.body.appendChild(themeToggle);
+    themeToggle.classList.remove('in-mini');
+  }
+
+  gsap.to(mini, {
+    yPercent: should ? 0 : -100,
+    autoAlpha: should ? 1 : 0,
+    duration: D(0.4),
+    overwrite: 'auto',
+    ease: should ? 'power3.out' : 'power2.in'
+  });
+}
+
+window.addEventListener('scroll', () => syncMini(false), { passive: true });
+syncMini(true);
+
+/* ====== 隱藏管理 ====== */
+
+function updateHiddenUI() {
+  const btn = document.getElementById('restore');
+  document.getElementById('hiddenCount').textContent = hidden.size;
+  btn.hidden = hidden.size === 0;
+}
+
+document.getElementById('restore').addEventListener('click', () => {
+  hidden.clear();
+  safeStore('toolbook-hidden', '[]');
+  if (currentChapter) renderChapter(currentChapter.part, currentChapter.ch, currentChapter.idx);
+  else renderToc();
+  updateHiddenUI();
+  showToast('已全部復原');
+});
+
+/* ====== Snackbar 通知＋錯誤代碼系統 ====== */
+
+const ERRORS = {
+  'TB-100': '無法連線同步服務',
+  'TB-101': '同步資料解析失敗',
+  'TB-102': '同步發生未預期的錯誤',
+  'TB-103': '資料夾讀取失敗',
+  'TB-110': '匯入失敗：項目資料不完整',
+  'TB-111': '翻譯結果解析失敗',
+  'TB-112': '備份檔解析失敗',
+  'TB-200': '複製到剪貼簿失敗',
+  'TB-300': '無法寫入本機儲存空間',
+};
+
+/* HTML 跳脫（所有動態插入內容共用） */
+const esc = (s) => String(s).replace(/[<>&"]/g, c => ({ '<':'&lt;', '>':'&gt;', '&':'&amp;', '"':'&quot;' }[c]));
+
+const snackStack = document.getElementById('snackStack');
+
+function snack(msg, opts = {}) {
+  const { code = null, error = false, duration = error ? 6 : 3 } = opts;
+  const el = document.createElement('div');
+  el.className = 'snack' + (error ? ' is-error' : '');
+  el.setAttribute('role', error ? 'alert' : 'status');
+  el.innerHTML = `
+    <span class="snack-dot"></span>
+    <span class="snack-msg"></span>
+    ${code ? `<span class="snack-code">${code}</span>` : ''}
+    <button class="snack-close" aria-label="關閉">✕</button>`;
+  el.querySelector('.snack-msg').textContent = msg;
+
+  /* 最多同時三則，太多就擠掉最舊的 */
+  while (snackStack.children.length >= 3) snackStack.firstElementChild.remove();
+  snackStack.appendChild(el);
+
+  let killed = false;
+  const kill = () => {
+    if (killed) return;
+    killed = true;
+    gsap.to(el, { autoAlpha: 0, y: 8, duration: D(0.25), ease: 'power2.in', onComplete: () => el.remove() });
+  };
+  const timer = setTimeout(kill, duration * 1000);
+  el.querySelector('.snack-close').addEventListener('click', () => { clearTimeout(timer); kill(); });
+  gsap.from(el, { autoAlpha: 0, y: 14, scale: 0.96, duration: D(0.4), ease: 'power3.out' });
+}
+
+function notifyError(code, detail) {
+  const base = ERRORS[code] || '發生未知錯誤';
+  snack(detail ? `${base}（${detail}）` : base, { code, error: true });
+  console.error(`[Toolbook ${code}]`, base, detail || '');
+}
+
+/* 既有呼叫點的相容介面 */
+function showToast(msg) { snack(msg); }
+
+/* localStorage 安全寫入：失敗（隱私模式／空間滿）會跳 TB-300 */
+function safeStore(key, value) {
+  try { localStorage.setItem(key, value); return true; }
+  catch (e) { notifyError('TB-300', e.name); return false; }
+}
+
+/* 複製文字：Clipboard API 被拒時退回傳統 execCommand，兩者都失敗才報 TB-200 */
+function copyText(text, msg = '已複製') {
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      if (ok) showToast(msg);
+      else notifyError('TB-200', '瀏覽器拒絕複製');
+    } catch (e) {
+      notifyError('TB-200', e.message);
+    }
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast(msg))
+      .catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
+/* ====== 手勢換頁：橫向滑動超過門檻就換頁（柔和轉場）====== */
+
+let swipe = null;
+
+view.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('input, textarea, button, .trigger-pill, kbd, a')) return;
+  swipe = { x: e.clientX, y: e.clientY };
+});
+
+window.addEventListener('pointerup', (e) => {
+  if (!swipe) return;
+  const dx = e.clientX - swipe.x;
+  const dy = e.clientY - swipe.y;
+  swipe = null;
+  if (Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+  const dir = dx < 0 ? 1 : -1;             /* 往左滑＝下一頁 */
+  const pages = buildPages();
+  const inSearch = currentChapter && currentChapter.search;
+
+  if (inSearch) {
+    if (dir === -1) goHome();
+    return;
+  }
+  const target = pageIndex + dir;
+  if (target < 0 || target >= pages.length) return;
+  goToPage(target, dir);
+  updateMiniState();
+});
+
+window.addEventListener('pointercancel', () => { swipe = null; });
+
+/* ====== 起始 ====== */
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    searchInput.focus();
+  }
+});
+
+/* ====== Hero 封面：開場時間軸＋亂碼解碼＋滑鼠視差＋環境微動 ====== */
+
+(() => {
+  const header = document.querySelector('.header');
+  const logo = document.querySelector('.logo-hero');
+  const eyebrow = document.querySelector('.header-eyebrow');
+  const subtitle = document.querySelector('.header-subtitle');
+  const title = document.getElementById('heroTitle');
+  const eyebrowText = eyebrow.textContent;
+
+  /* 拆字 */
+  function splitWord(word) {
+    const chars = [...word.textContent.trim()];
+    word.textContent = '';
+    word.setAttribute('aria-hidden', 'true');
+    chars.forEach(c => {
+      const s = document.createElement('span');
+      s.className = 'char';
+      s.textContent = c;
+      word.appendChild(s);
+    });
+  }
+
+  /* —— 標題重建：首頁＝Claude/Toolbook 兩行，章節頁＝章名一行 —— */
+
+  let heroKey = 'toc';   /* 目前 hero 顯示的內容，避免重複動畫 */
+  let eyeTween = null;
+
+  function buildTitle(lines) {
+    title.innerHTML = '';
+    lines.forEach(line => {
+      const w = document.createElement('span');
+      w.className = 'word' + (line.accent ? ' header-title-accent' : '');
+      w.textContent = line.text;
+      title.appendChild(w);
+      splitWord(w);
+    });
+    return title.querySelectorAll('.char');
+  }
+
+  /* 重點字底線：字升完後從左劃出 */
+  function revealUnderlines() {
+    title.querySelectorAll('.word.header-title-accent').forEach(w => w.classList.add('u-in'));
+  }
+
+  function heroConfig(p) {
+    if (p.type === 'toc') return {
+      key: 'toc',
+      eyebrow: eyebrowText,
+      lines: [{ text: 'Claude' }, { text: 'Toolbook', accent: true }],
+      chapterMode: false,
+    };
+    return {
+      key: `${p.part.key}/${p.ch.key}`,
+      eyebrow: `${p.part.en} · 第${NUMS[p.dispIdx]}章`,
+      lines: [{ text: p.ch.name }],
+      chapterMode: true,
+    };
+  }
+
+  window.setHero = function (p) {
+    const cfg = heroConfig(p);
+    if (cfg.key === heroKey) return;
+    heroKey = cfg.key;
+
+    title.classList.toggle('is-chapter', cfg.chapterMode);
+    subtitle.classList.toggle('is-off', cfg.chapterMode);
+    title.setAttribute('aria-label', cfg.lines.map(l => l.text).join(' '));
+
+    if (reduceMotion) {
+      const chars = buildTitle(cfg.lines);
+      title.querySelectorAll('.word').forEach(w => { w.style.overflow = 'visible'; });
+      eyebrow.textContent = cfg.eyebrow;
+      revealUnderlines();
+      return;
+    }
+
+    eyeTween?.kill();
+    eyeTween = scrambleTween(eyebrow, cfg.eyebrow, 0.6);
+
+    /* 舊字往下沉回遮罩 → 重建 → 新字升起 */
+    const oldChars = title.querySelectorAll('.char');
+    title.querySelectorAll('.word').forEach(w => { w.style.overflow = 'hidden'; });
+    gsap.to(oldChars, {
+      yPercent: 115, duration: 0.3, stagger: 0.012, ease: 'power2.in', overwrite: 'auto',
+      onComplete: () => {
+        const chars = buildTitle(cfg.lines);
+        gsap.from(chars, {
+          yPercent: 115, duration: 0.7, stagger: 0.03, ease: 'power4.out',
+          onComplete: () => {
+            title.querySelectorAll('.word').forEach(w => { w.style.overflow = 'visible'; });
+            revealUnderlines();
+          }
+        });
+      }
+    });
+  };
+
+  /* —— 初次進場 —— */
+
+  title.querySelectorAll('.word').forEach(splitWord);
+  const allChars = title.querySelectorAll('.char');
+  const words = title.querySelectorAll('.word');
+
+  if (reduceMotion) {
+    words.forEach(w => { w.style.overflow = 'visible'; });
+    revealUnderlines();
+    return;
+  }
+
+  /* 亂碼掃描：眉標逐字「解碼」出來（mono 字體寬度穩定）
+     同一元素同時只能有一個 scramble，新的會殺掉舊的，避免互相覆寫 */
+  const GLYPHS = '░▒▓/\\|·—ABCDEFGHIKLMNOPRSTUVWX';
+  const scrambleActive = new WeakMap();
+  eyebrow.textContent = '';
+  function scrambleTween(el, text, dur) {
+    scrambleActive.get(el)?.kill();
+    const state = { p: 0 };
+    const tween = gsap.to(state, {
+      p: 1, duration: dur, ease: 'none',
+      onUpdate() {
+        const fixed = Math.floor(state.p * text.length);
+        el.textContent = text.slice(0, fixed) +
+          [...text.slice(fixed)].map(c => c === ' ' ? ' ' : GLYPHS[(Math.random() * GLYPHS.length) | 0]).join('');
+      },
+      onComplete() { el.textContent = text; scrambleActive.delete(el); }
+    });
+    scrambleActive.set(el, tween);
+    return tween;
+  }
+
+  /* —— 開場時間軸 —— */
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+  tl.from(logo, { autoAlpha: 0, scale: 0.4, rotation: -16, duration: 0.8, transformOrigin: '50% 50%' })
+    .add(scrambleTween(eyebrow, eyebrowText, 0.9), '-=0.45')
+    .from(allChars, { yPercent: 115, duration: 0.9, stagger: { each: 0.035, from: 'start' } }, '-=0.65')
+    .add(() => revealUnderlines(), '-=0.25')
+    .from('.header-subtitle, .search-wrap', { autoAlpha: 0, y: 18, duration: 0.7, stagger: 0.12 }, '-=0.5')
+    .add(() => { words.forEach(w => { w.style.overflow = 'visible'; }); });
+
+
+})();
+renderToc(true);
+updateHiddenUI();
+
+/* ====== Sync 同步檢查 ====== */
+
+const syncBtn = document.getElementById('syncBtn');
+const syncModal = document.getElementById('syncModal');
+const syncBackdrop = document.getElementById('syncBackdrop');
+const syncClose = document.getElementById('syncClose');
+const syncBody = document.getElementById('syncBody');
+
+/* 通用浮層：同步檢查與翻譯貼上共用同一個 modal 殼 */
+function openSheet(title, bodyHtml) {
+  syncModal.querySelector('.sync-title').textContent = title;
+  syncBackdrop.hidden = false;
+  syncModal.hidden = false;
+  gsap.fromTo(syncBackdrop, { autoAlpha: 0 }, { autoAlpha: 1, duration: D(0.25), ease: 'power2.out' });
+  gsap.fromTo(syncModal,
+    { autoAlpha: 0, y: 16, scale: 0.97 },
+    { autoAlpha: 1, y: 0, scale: 1, duration: D(0.35), ease: 'power3.out' }
+  );
+  syncBody.innerHTML = bodyHtml;
+}
+
+function openSyncModal() {
+  openSheet('同步檢查', '<p class="sync-loading">掃描中…</p>');
+  runSync();
+}
+
+function closeSyncModal() {
+  gsap.to(syncModal, { autoAlpha: 0, y: 8, scale: 0.97, duration: D(0.22), ease: 'power2.in',
+    onComplete: () => { syncModal.hidden = true; }
+  });
+  gsap.to(syncBackdrop, { autoAlpha: 0, duration: D(0.22), ease: 'power2.in',
+    onComplete: () => { syncBackdrop.hidden = true; }
+  });
+}
+
+syncBtn.addEventListener('click', openSyncModal);
+syncClose.addEventListener('click', closeSyncModal);
+syncBackdrop.addEventListener('click', closeSyncModal);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !syncModal.hidden) closeSyncModal();
+});
+
+/* —— 匯入：把掃描到的項目轉成工具書詞條 —— */
+
+function entryFromSkill(s) {
+  if (!s || !s.id) return null;
+  return {
+    id: s.id, type: 'skill', cat: 'imported',
+    en: s.name || s.id, zh: '本機 Skill',
+    zhDesc: '從本機 ~/.claude/skills 自動匯入，中文介紹待補。',
+    enDesc: s.desc || 'Locally installed skill (auto-imported).',
+    trigger: '/' + (s.name || s.id),
+    imported: true,
+  };
+}
+
+function entryFromPlugin(p) {
+  if (!p || !p.name) return null;
+  return {
+    id: 'imp-' + (p.id || p.name), type: 'mcp', cat: 'm-imported',
+    en: p.name, zh: '本機 Plugin',
+    zhDesc: '從本機已安裝 plugins 自動匯入，中文介紹待補。',
+    enDesc: 'Locally installed plugin (auto-imported).',
+    trigger: '對話中直接使用相關功能',
+    imported: true,
+  };
+}
+
+function importEntry(entry) {
+  if (!entry) { notifyError('TB-110'); return false; }
+  if (DATA.some(d => d.id === entry.id)) return false;   /* 已存在就略過 */
+  DATA.push(entry);
+  importedEntries.push(entry);
+  safeStore('toolbook-imported', JSON.stringify(importedEntries));
+  return true;
+}
+
+function afterImport(count) {
+  if (!count) return;
+  snack(`已加入 ${count} 個項目到「新收錄」`);
+  if (!currentChapter) renderToc(false);   /* 目錄頁開著的話即時更新計數 */
+}
+
+/* —— 同步來源 A：本機 PHP；失敗時退到來源 B：瀏覽器資料夾選取 —— */
+
+function syncErrorUI(code, detail) {
+  notifyError(code, detail);
+  const supportsFS = 'showDirectoryPicker' in window;
+  syncBody.innerHTML = `
+    <p class="sync-loading" style="color:var(--danger)">${ERRORS[code]} <span style="font-family:var(--font-mono);font-size:11px">${code}</span></p>
+    ${supportsFS
+      ? `<div style="text-align:center;margin:4px 0 0"><button class="sync-add" id="pickFolder">📂 改用資料夾選取（免伺服器）</button></div>
+         <p class="sync-note">選取你的 <b>~/.claude</b>（可一併讀到 plugins）或 <b>~/.claude/skills</b> 資料夾，瀏覽器直接讀取內容，不需要任何伺服器。</p>`
+      : `<p class="sync-note">你的瀏覽器不支援資料夾選取（需要 Chrome／Edge）。改用本機伺服器：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b> 後重試。</p>`}`;
+  syncBody.querySelector('#pickFolder')?.addEventListener('click', runFolderSync);
+}
+
+/* 用 File System Access API 掃描使用者選取的資料夾 */
+async function scanDirectory(root) {
+  const data = { skills: [], plugins: [] };
+  let skillsDir = root;
+  try { skillsDir = await root.getDirectoryHandle('skills'); } catch { /* 選的就是 skills 資料夾本身 */ }
+
+  for await (const [name, handle] of skillsDir.entries()) {
+    if (handle.kind !== 'directory' || name.startsWith('.')) continue;
+    try {
+      const fh = await handle.getFileHandle('SKILL.md');
+      const text = (await (await fh.getFile()).text()).slice(0, 600);
+      let skillName = name, desc = '';
+      const m = text.match(/^---\s*\n([\s\S]*?)\n---/);
+      if (m) {
+        const d = m[1].match(/^description:\s*(.+)$/m);
+        if (d) desc = d[1].trim().slice(0, 120);
+        const n = m[1].match(/^name:\s*(.+)$/m);
+        if (n) skillName = n[1].trim();
+      }
+      data.skills.push({ id: name, name: skillName, desc });
+    } catch { /* 沒有 SKILL.md（或 symlink 讀不到）就跳過 */ }
+  }
+
+  /* 如果選的是 .claude 根目錄，順便讀 plugins */
+  try {
+    const pluginsDir = await root.getDirectoryHandle('plugins');
+    const pf = await pluginsDir.getFileHandle('installed_plugins.json');
+    const json = JSON.parse(await (await pf.getFile()).text());
+    Object.keys(json.plugins || {}).forEach(pid => {
+      data.plugins.push({ id: pid, name: pid.split('@')[0] });
+    });
+  } catch { /* 不是 .claude 根目錄就略過 */ }
+
+  return data;
+}
+
+async function runFolderSync() {
+  let root;
+  try {
+    root = await showDirectoryPicker();
+  } catch (e) {
+    if (e.name !== 'AbortError') notifyError('TB-103', e.message);
+    return;
+  }
+  syncBody.innerHTML = '<p class="sync-loading">讀取資料夾中…</p>';
+  try {
+    renderSyncResults(await scanDirectory(root));
+  } catch (e) {
+    syncErrorUI('TB-103', e.message);
+  }
+}
+
+async function runSync() {
+  let res, data;
+  try {
+    res = await fetch('sync.php', { cache: 'no-store' });
+  } catch (e) {
+    syncErrorUI('TB-100', '請確認本機伺服器運作中');
+    return;
+  }
+  if (!res.ok) {
+    syncErrorUI('TB-100', `HTTP ${res.status}`);
+    return;
+  }
+  try {
+    data = await res.json();
+  } catch (e) {
+    syncErrorUI('TB-101', '回應不是有效的 JSON');
+    return;
+  }
+  renderSyncResults(data);
+}
+
+function renderSyncResults(data) {
+  let newSkills, newPlugins;
+  try {
+    const knownSkillIds = new Set(DATA.filter(d => d.type === 'skill').map(d => d.id));
+    const knownPluginNames = DATA.filter(d => d.type === 'mcp').map(d => d.en.toLowerCase());
+
+    newSkills = (data.skills || []).filter(s => !knownSkillIds.has(s.id));
+    /* 名稱比對放寬：完全相同、或收錄名稱中含有該單字（如 "Atlassian (Jira)" 對上 "atlassian"）都算已收錄 */
+    newPlugins = (data.plugins || []).filter(p => {
+      const n = p.name.toLowerCase();
+      return !knownPluginNames.some(en => en === n || en.split(/[^a-z0-9]+/).includes(n));
+    });
+  } catch (e) {
+    syncErrorUI('TB-102', e.message);
+    return;
+  }
+
+  if (newSkills.length === 0 && newPlugins.length === 0) {
+    syncBody.innerHTML = `
+      <div class="sync-ok">
+        <span class="sync-ok-icon">✓</span>
+        <span>已是最新版本，沒有未收錄的項目。</span>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+
+  if (newSkills.length > 0) {
+    html += `<div class="sync-section" data-kind="skill">
+      <div class="sync-section-head">
+        <div class="sync-section-title">未收錄 Skills（${newSkills.length}）</div>
+        <button class="sync-add js-add-all">全部加入</button>
+      </div>`;
+    newSkills.forEach((s, i) => {
+      html += `<div class="sync-item">
+        <div class="sync-item-row">
+          <span class="sync-item-name">${esc(s.name)}</span>
+          <button class="sync-add js-add" data-kind="skill" data-i="${i}">＋ 加入</button>
+        </div>
+        ${s.desc ? `<span class="sync-item-desc">${esc(s.desc)}</span>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  if (newPlugins.length > 0) {
+    html += `<div class="sync-section" data-kind="plugin">
+      <div class="sync-section-head">
+        <div class="sync-section-title">未收錄 Plugin / MCP（${newPlugins.length}）</div>
+        <button class="sync-add js-add-all">全部加入</button>
+      </div>`;
+    newPlugins.forEach((p, i) => {
+      html += `<div class="sync-item">
+        <div class="sync-item-row">
+          <span class="sync-item-name">${esc(p.name)}</span>
+          <button class="sync-add js-add" data-kind="plugin" data-i="${i}">＋ 加入</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  html += `<p class="sync-note">點「加入」會把項目收進「新收錄」章節（存在你的瀏覽器），之後可以再補中文介紹。</p>`;
+  syncBody.innerHTML = html;
+
+  const toEntry = (kind, i) => kind === 'skill' ? entryFromSkill(newSkills[i]) : entryFromPlugin(newPlugins[i]);
+
+  syncBody.querySelectorAll('.js-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ok = importEntry(toEntry(btn.dataset.kind, +btn.dataset.i));
+      btn.disabled = true;
+      btn.textContent = '已加入';
+      afterImport(ok ? 1 : 0);
+    });
+  });
+
+  syncBody.querySelectorAll('.js-add-all').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const kind = btn.closest('.sync-section').dataset.kind;
+      const list = kind === 'skill' ? newSkills : newPlugins;
+      let count = 0;
+      list.forEach((_, i) => { if (importEntry(toEntry(kind, i))) count++; });
+      btn.closest('.sync-section').querySelectorAll('.sync-add').forEach(b => {
+        b.disabled = true;
+        if (b.classList.contains('js-add')) b.textContent = '已加入';
+      });
+      afterImport(count);
+    });
+  });
+
+  gsap.from(syncBody.querySelectorAll('.sync-item, .sync-ok, .sync-note'),
+    { autoAlpha: 0, y: 6, duration: D(0.3), stagger: 0.04, ease: 'power2.out' }
+  );
+}
+
+/* ====== 翻譯工作流：複製 prompt 給 Claude → 貼回 JSON 套用 ====== */
+
+function buildTranslatePrompt(items) {
+  const payload = items.map(i => ({ id: i.id, en: i.en, enDesc: i.enDesc }));
+  return `請把以下工具清單翻成繁體中文。只回傳「純 JSON 陣列」，不要任何說明文字或 markdown 圍欄。格式：
+[{"id":"原樣保留","zh":"6 字以內的中文功能名","zhDesc":"40~60 字的中文介紹，說明這個工具的用途與適用情境"}]
+
+${JSON.stringify(payload, null, 2)}`;
+}
+
+function openTranslatePaste() {
+  openSheet('貼上翻譯結果', `
+    <textarea class="paste-box" placeholder='貼上 Claude 回傳的 JSON 陣列…'></textarea>
+    <div class="sync-section-head" style="margin-top:12px">
+      <span class="sync-note" style="margin:0;background:none;padding:0">套用後會更新「新收錄」裡對應項目的中文。</span>
+      <button class="sync-add js-tr-apply">套用</button>
+    </div>`);
+  syncBody.querySelector('.js-tr-apply').addEventListener('click', () => {
+    applyTranslations(syncBody.querySelector('.paste-box').value);
+  });
+}
+
+function applyTranslations(text) {
+  let arr;
+  try {
+    /* 容錯：就算混了其他文字，抓第一段 [...] 來解析 */
+    const m = String(text).match(/\[[\s\S]*\]/);
+    arr = JSON.parse(m ? m[0] : text);
+  } catch (e) {
+    notifyError('TB-111', '不是有效的 JSON 陣列');
+    return;
+  }
+  if (!Array.isArray(arr)) { notifyError('TB-111', '格式必須是陣列'); return; }
+
+  let n = 0;
+  arr.forEach(t => {
+    if (!t || !t.id) return;
+    const entry = importedEntries.find(x => x.id === t.id);
+    if (!entry) return;
+    if (t.zh) entry.zh = String(t.zh).slice(0, 20);
+    if (t.zhDesc) entry.zhDesc = String(t.zhDesc).slice(0, 200);
+    n++;
+  });
+
+  if (!n) { notifyError('TB-111', '沒有對得上的項目 id'); return; }
+  safeStore('toolbook-imported', JSON.stringify(importedEntries));
+  closeSyncModal();
+  if (currentChapter && !currentChapter.search) {
+    renderChapter(currentChapter.part, currentChapter.ch, currentChapter.idx);
+  }
+  snack(`已套用 ${n} 筆翻譯`);
+}
+
+/* ====== 匯出／匯入 JSON 備份 ====== */
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const payload = {
+    version: 1,
+    imported: importedEntries,
+    hidden: [...hidden],
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'claude-toolbook-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  snack('已匯出備份');
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  let data;
+  try {
+    data = JSON.parse(await file.text());
+  } catch {
+    notifyError('TB-112', '不是有效的 JSON 檔');
+    return;
+  }
+  if (!data || typeof data !== 'object') { notifyError('TB-112', '格式不正確'); return; }
+
+  let n = 0;
+  (Array.isArray(data.imported) ? data.imported : []).filter(x => x && x.id).forEach(entry => {
+    if (!importedEntries.some(x => x.id === entry.id)) { importedEntries.push(entry); n++; }
+    if (!DATA.some(d => d.id === entry.id)) DATA.push(entry);
+  });
+  (Array.isArray(data.hidden) ? data.hidden : []).forEach(id => hidden.add(id));
+
+  safeStore('toolbook-imported', JSON.stringify(importedEntries));
+  safeStore('toolbook-hidden', JSON.stringify([...hidden]));
+  if (!currentChapter) renderToc(false);
+  updateHiddenUI();
+  snack(n ? `已匯入備份（新增 ${n} 項）` : '已匯入備份（沒有新項目）');
+});
+</script>
+</body>
+</html>
