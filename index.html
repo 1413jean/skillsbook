@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Toolbook · 功能工具書</title>
+<title>SkillsBook · Skills 與 MCP 功能工具書</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='90' y1='0' x2='90' y2='180' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23313131'/%3E%3Cstop offset='1' stop-color='%23141414'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='32' fill='url(%23g)'/%3E%3Cg fill='%23fff'%3E%3Ccircle cx='42.32' cy='101.96' r='11.32'/%3E%3Ccircle cx='137.68' cy='78.47' r='11.32'/%3E%3Cpath d='M78.14 39.19h23.32L79.2 113.29H55.88z'/%3E%3Cpath d='M100.79 67.15h23.32l-22.26 74.1H78.53z'/%3E%3C/g%3E%3C/svg%3E">
 <style>
 /* ============================================================
-   Claude Toolbook — 極簡白・書感（支援 Dark Mode）
+   SkillsBook — 極簡白・書感（支援 Dark Mode）
    ============================================================ */
 
 :root {
@@ -391,6 +391,31 @@ body {
 .toc-dots { flex: 1; border-bottom: 1.5px dotted var(--line); transform: translateY(-4px); }
 .toc-count { font-family: var(--font-mono); font-size: 13px; color: var(--ink-tertiary); flex-shrink: 0; }
 
+/* ====== 附錄（工具操作：同步／備份／復原）====== */
+
+.toc-appendix { margin-top: 64px; padding-top: 30px; border-top: 1px solid var(--line); }
+.toc-appendix .toc-part-title { font-size: 19px; }
+
+.toc-sub {
+  font-size: 12.5px;
+  color: var(--ink-tertiary);
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.toc-row:hover .toc-sub { color: var(--ink-secondary); }
+.toc-row[hidden] { display: none; }
+
+.toc-appendix .toc-count {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+  .toc-sub { display: none; }
+}
+
 /* ====== 章節頁 ====== */
 
 .back-btn {
@@ -625,7 +650,6 @@ body {
 .footer .footer-headline { color: var(--footer-ink); }
 .footer .footer-bottom { color: var(--footer-sub); }
 .footer .footer-meta { color: var(--footer-meta); }
-.footer button { color: var(--footer-sub); }
 
 .footer-inner {
   max-width: 840px;
@@ -658,30 +682,6 @@ body {
 }
 
 .footer-meta { color: var(--ink-tertiary); }
-
-.footer button {
-  font-size: 12.5px;
-  color: var(--footer-sub);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline dotted;
-  text-underline-offset: 3px;
-  border-radius: 6px;
-  padding: 2px 4px;
-  margin: -2px -4px;
-  transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
-}
-
-.footer button:hover {
-  color: var(--footer-ink);
-  text-decoration-style: solid;
-}
-
-.footer button:active {
-  transform: scale(0.96);
-  opacity: 0.7;
-}
 
 @media (max-width: 600px) {
   .footer-inner { padding: 48px 20px 28px; gap: 56px; }
@@ -877,6 +877,52 @@ body {
   background: var(--bg-soft);
   border-radius: 8px;
 }
+
+/* —— 同步教學頁（免伺服器流程的引導畫面）—— */
+
+.sync-guide-lead { font-size: 13.5px; color: var(--ink-secondary); line-height: 1.7; }
+.sync-guide-lead b, .sync-steps b { color: var(--ink); }
+
+.sync-steps {
+  margin: 14px 0 16px;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--ink-secondary);
+  line-height: 1.8;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sync-kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: 1px 6px;
+  margin: 0 1px;
+  white-space: nowrap;
+}
+
+.sync-path {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: none;
+  border-radius: 5px;
+  padding: 1px 7px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sync-path:active { transform: scale(0.96); }
+
+.sync-add-primary { font-size: 13.5px; font-weight: 600; padding: 9px 22px; }
 </style>
 </head>
 <body>
@@ -894,7 +940,7 @@ body {
 <div class="mini" id="mini">
   <div class="mini-inner">
     <button class="mini-back" id="miniBack" aria-label="回目錄" title="回目錄">←</button>
-    <div class="mini-title" id="miniTitle"><svg class="logo-mark logo-mini" viewBox="28 36 124 108" fill="currentColor" aria-hidden="true"><circle cx="42.32" cy="101.96" r="11.32"/><circle cx="137.68" cy="78.47" r="11.32"/><path d="M78.14 39.19H101.46L79.2 113.29H55.88L78.14 39.19Z"/><path d="M100.79 67.15H124.11L101.85 141.25H78.53L100.79 67.15Z"/></svg>Claude <span class="header-title-accent">Toolbook</span></div>
+    <div class="mini-title" id="miniTitle"><svg class="logo-mark logo-mini" viewBox="28 36 124 108" fill="currentColor" aria-hidden="true"><circle cx="42.32" cy="101.96" r="11.32"/><circle cx="137.68" cy="78.47" r="11.32"/><path d="M78.14 39.19H101.46L79.2 113.29H55.88L78.14 39.19Z"/><path d="M100.79 67.15H124.11L101.85 141.25H78.53L100.79 67.15Z"/></svg>Skills<span class="header-title-accent">Book</span></div>
     <input id="miniSearch" class="mini-search" type="search" placeholder="搜尋功能…" autocomplete="off">
   </div>
 </div>
@@ -909,9 +955,9 @@ body {
       <path d="M100.79 67.15H124.11L101.85 141.25H78.53L100.79 67.15Z"/>
     </svg>
     <p class="header-eyebrow js-hero">A Field Guide to Your Tools</p>
-    <h1 class="header-title" id="heroTitle" aria-label="Claude Toolbook">
-      <span class="word">Claude</span>
-      <span class="word header-title-accent">Toolbook</span>
+    <h1 class="header-title" id="heroTitle" aria-label="SkillsBook">
+      <span class="word">Skills</span>
+      <span class="word header-title-accent">Book</span>
     </h1>
     <p class="header-subtitle js-hero">你的 Skills 與 MCP 功能工具書——不記得名稱沒關係，用「想做什麼」來查。</p>
 
@@ -942,14 +988,8 @@ body {
     <p class="footer-headline">Know your tools,<br>and the tools will <span class="accent">work for you</span>.</p>
     <div class="footer-bottom">
       <span>©2026 Jean-Designer Product. All rights reserved.</span>
-      <span class="footer-meta">
-        資料更新：2026-06-10
-        <button id="syncBtn">· 同步檢查</button>
-        <button id="exportBtn">· 匯出</button>
-        <button id="importBtn">· 匯入</button>
-        <button id="restore" hidden>· 已隱藏 <span id="hiddenCount">0</span> 項，全部復原</button>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
-      </span>
+      <span class="footer-meta">資料更新：2026-06-10</span>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
     </div>
   </div>
 </footer>
@@ -2062,6 +2102,35 @@ function renderToc(animate = true) {
     toc.appendChild(el);
   });
 
+  /* 附錄：管理這本書的工具列（同步／備份／復原） */
+  const apx = document.createElement('div');
+  apx.className = 'toc-part toc-appendix';
+  apx.innerHTML = `
+    <h2 class="toc-part-title">附錄 · 工具 <span class="en">Appendix — Utilities</span></h2>
+    <p class="toc-part-desc">管理這本工具書：同步你安裝的工具、備份與還原個人資料。</p>`;
+  const actions = [
+    { num: 'i',   name: '同步檢查', sub: '掃描你安裝的 Skills 與 MCP', tag: 'scan',   fn: () => openSyncModal() },
+    { num: 'ii',  name: '匯出備份', sub: '下載匯入項目與隱藏設定',     tag: 'json ↓', fn: () => exportBackup() },
+    { num: 'iii', name: '匯入備份', sub: '從備份檔合併還原',           tag: 'json ↑', fn: () => document.getElementById('importFile').click() },
+    { num: 'iv',  name: '復原隱藏項目', sub: `目前隱藏 ${hidden.size} 項`, tag: `${hidden.size}`, fn: () => restoreHidden(), id: 'apxRestore', hide: hidden.size === 0 },
+  ];
+  actions.forEach(a => {
+    const row = document.createElement('button');
+    row.className = 'toc-row';
+    if (a.id) row.id = a.id;
+    if (a.hide) row.hidden = true;
+    row.innerHTML = `
+      <span class="toc-num">${a.num}</span>
+      <span class="toc-name">${a.name}</span>
+      <span class="toc-arrow">→</span>
+      <span class="toc-sub">${a.sub}</span>
+      <span class="toc-dots"></span>
+      <span class="toc-count">${a.tag}</span>`;
+    row.addEventListener('click', a.fn);
+    apx.appendChild(row);
+  });
+  toc.appendChild(apx);
+
   view.appendChild(toc);
   if (typeof updateMiniState === 'function') updateMiniState();
   if (animate) {
@@ -2276,7 +2345,7 @@ function makeEntry(item) {
       autoAlpha: 0, height: 0, paddingTop: 0, paddingBottom: 0, duration: D(0.4), ease: 'power3.inOut',
       onComplete: () => { el.remove(); updateHiddenUI(); }
     });
-    showToast('已隱藏，可在頁尾復原');
+    showToast('已隱藏，可在目錄附錄復原');
   });
 
   return el;
@@ -2373,19 +2442,22 @@ syncMini(true);
 /* ====== 隱藏管理 ====== */
 
 function updateHiddenUI() {
-  const btn = document.getElementById('restore');
-  document.getElementById('hiddenCount').textContent = hidden.size;
-  btn.hidden = hidden.size === 0;
+  /* 附錄的「復原隱藏項目」列只在目錄頁存在，更新時要先確認 */
+  const row = document.getElementById('apxRestore');
+  if (!row) return;
+  row.hidden = hidden.size === 0;
+  row.querySelector('.toc-sub').textContent = `目前隱藏 ${hidden.size} 項`;
+  row.querySelector('.toc-count').textContent = hidden.size;
 }
 
-document.getElementById('restore').addEventListener('click', () => {
+function restoreHidden() {
   hidden.clear();
   safeStore('toolbook-hidden', '[]');
   if (currentChapter) renderChapter(currentChapter.part, currentChapter.ch, currentChapter.idx);
   else renderToc();
   updateHiddenUI();
   showToast('已全部復原');
-});
+}
 
 /* ====== Snackbar 通知＋錯誤代碼系統 ====== */
 
@@ -2436,7 +2508,7 @@ function snack(msg, opts = {}) {
 function notifyError(code, detail) {
   const base = ERRORS[code] || '發生未知錯誤';
   snack(detail ? `${base}（${detail}）` : base, { code, error: true });
-  console.error(`[Toolbook ${code}]`, base, detail || '');
+  console.error(`[SkillsBook ${code}]`, base, detail || '');
 }
 
 /* 既有呼叫點的相容介面 */
@@ -2538,7 +2610,7 @@ document.addEventListener('keydown', (e) => {
     });
   }
 
-  /* —— 標題重建：首頁＝Claude/Toolbook 兩行，章節頁＝章名一行 —— */
+  /* —— 標題重建：首頁＝Skills/Book 兩行，章節頁＝章名一行 —— */
 
   let heroKey = 'toc';   /* 目前 hero 顯示的內容，避免重複動畫 */
   let eyeTween = null;
@@ -2564,7 +2636,7 @@ document.addEventListener('keydown', (e) => {
     if (p.type === 'toc') return {
       key: 'toc',
       eyebrow: eyebrowText,
-      lines: [{ text: 'Claude' }, { text: 'Toolbook', accent: true }],
+      lines: [{ text: 'Skills' }, { text: 'Book', accent: true }],
       chapterMode: false,
     };
     return {
@@ -2662,7 +2734,6 @@ updateHiddenUI();
 
 /* ====== Sync 同步檢查 ====== */
 
-const syncBtn = document.getElementById('syncBtn');
 const syncModal = document.getElementById('syncModal');
 const syncBackdrop = document.getElementById('syncBackdrop');
 const syncClose = document.getElementById('syncClose');
@@ -2682,7 +2753,7 @@ function openSheet(title, bodyHtml) {
 }
 
 function openSyncModal() {
-  openSheet('同步檢查', '<p class="sync-loading">掃描中…</p>');
+  openSheet('同步檢查', '<p class="sync-loading">檢查同步來源…</p>');
   runSync();
 }
 
@@ -2695,7 +2766,6 @@ function closeSyncModal() {
   });
 }
 
-syncBtn.addEventListener('click', openSyncModal);
 syncClose.addEventListener('click', closeSyncModal);
 syncBackdrop.addEventListener('click', closeSyncModal);
 document.addEventListener('keydown', (e) => {
@@ -2743,18 +2813,36 @@ function afterImport(count) {
   if (!currentChapter) renderToc(false);   /* 目錄頁開著的話即時更新計數 */
 }
 
-/* —— 同步來源 A：本機 PHP；失敗時退到來源 B：瀏覽器資料夾選取 —— */
+/* —— 同步來源 A：本機 PHP（有就自動掃）；來源 B：瀏覽器資料夾選取（預設流程）—— */
 
-function syncErrorUI(code, detail) {
-  notifyError(code, detail);
-  const supportsFS = 'showDirectoryPicker' in window;
+/* 沒有伺服器是大多數人的正常情況，不當錯誤處理，直接帶到圖文教學 */
+function showFolderGuide(errMsg) {
+  if (!('showDirectoryPicker' in window)) {
+    syncBody.innerHTML = `
+      <p class="sync-loading">這個瀏覽器不支援資料夾選取</p>
+      <p class="sync-note">免伺服器同步需要 <b>Chrome</b> 或 <b>Edge</b>（Safari／Firefox 不支援）。
+      或者改用本機伺服器：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b>，再重新打開這個視窗就會自動掃描。</p>`;
+    return;
+  }
   syncBody.innerHTML = `
-    <p class="sync-loading" style="color:var(--danger)">${ERRORS[code]} <span style="font-family:var(--font-mono);font-size:11px">${code}</span></p>
-    ${supportsFS
-      ? `<div style="text-align:center;margin:4px 0 0"><button class="sync-add" id="pickFolder">📂 改用資料夾選取（免伺服器）</button></div>
-         <p class="sync-note">選取你的 <b>~/.claude</b>（可一併讀到 plugins）或 <b>~/.claude/skills</b> 資料夾，瀏覽器直接讀取內容，不需要任何伺服器。</p>`
-      : `<p class="sync-note">你的瀏覽器不支援資料夾選取（需要 Chrome／Edge）。改用本機伺服器：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b> 後重試。</p>`}`;
-  syncBody.querySelector('#pickFolder')?.addEventListener('click', runFolderSync);
+    ${errMsg ? `<p class="sync-loading" style="color:var(--danger);padding:0 0 8px">${esc(errMsg)}</p>` : ''}
+    <p class="sync-guide-lead">掃描你電腦上已安裝的 Skills 與 MCP，找出工具書還沒收錄的項目。<b>不需要伺服器</b>——瀏覽器只會讀取資料夾內容，不會修改任何檔案。</p>
+    <ol class="sync-steps">
+      <li>點下方「<b>選取 .claude 資料夾</b>」，會跳出系統的資料夾視窗</li>
+      <li>它是隱藏資料夾，直接輸入路徑最快：<br>
+          macOS — 按 <span class="sync-kbd">⌘</span><span class="sync-kbd">⇧</span><span class="sync-kbd">G</span> 後貼上
+          <button class="sync-path" id="copyPathMac">~/.claude</button>（點一下複製）再按 Enter<br>
+          Windows — 在視窗上方的路徑列貼上
+          <button class="sync-path" id="copyPathWin">%USERPROFILE%\\.claude</button></li>
+      <li>按「選取」，瀏覽器詢問權限時點「<b>檢視檔案</b>」允許讀取</li>
+    </ol>
+    <div style="text-align:center;margin-top:4px">
+      <button class="sync-add sync-add-primary" id="pickFolder">📂 選取 .claude 資料夾</button>
+    </div>
+    <p class="sync-note">進階：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b> 啟動本機伺服器的話，打開這個視窗會自動掃描，不用選資料夾。symlink 形式的 skill 資料夾選取讀不到，也請改用這個方式。</p>`;
+  syncBody.querySelector('#pickFolder').addEventListener('click', runFolderSync);
+  syncBody.querySelector('#copyPathMac').addEventListener('click', () => copyText('~/.claude', '已複製路徑'));
+  syncBody.querySelector('#copyPathWin').addEventListener('click', () => copyText('%USERPROFILE%\\.claude', '已複製路徑'));
 }
 
 /* 用 File System Access API 掃描使用者選取的資料夾 */
@@ -2805,29 +2893,21 @@ async function runFolderSync() {
   try {
     renderSyncResults(await scanDirectory(root));
   } catch (e) {
-    syncErrorUI('TB-103', e.message);
+    notifyError('TB-103', e.message);
+    showFolderGuide('資料夾讀取失敗，請確認選的是 .claude（或 skills）資料夾後再試一次');
   }
 }
 
 async function runSync() {
-  let res, data;
+  /* 靜默探測本機 sync.php：有就自動掃描，沒有就走免伺服器教學 */
   try {
-    res = await fetch('sync.php', { cache: 'no-store' });
-  } catch (e) {
-    syncErrorUI('TB-100', '請確認本機伺服器運作中');
-    return;
-  }
-  if (!res.ok) {
-    syncErrorUI('TB-100', `HTTP ${res.status}`);
-    return;
-  }
-  try {
-    data = await res.json();
-  } catch (e) {
-    syncErrorUI('TB-101', '回應不是有效的 JSON');
-    return;
-  }
-  renderSyncResults(data);
+    const res = await fetch('sync.php', { cache: 'no-store' });
+    if (res.ok) {
+      renderSyncResults(await res.json());
+      return;
+    }
+  } catch { /* 沒有本機伺服器或回應無效——預期情況 */ }
+  showFolderGuide();
 }
 
 function renderSyncResults(data) {
@@ -2843,7 +2923,8 @@ function renderSyncResults(data) {
       return !knownPluginNames.some(en => en === n || en.split(/[^a-z0-9]+/).includes(n));
     });
   } catch (e) {
-    syncErrorUI('TB-102', e.message);
+    notifyError('TB-102', e.message);
+    showFolderGuide('同步發生未預期的錯誤，請再試一次');
     return;
   }
 
@@ -2981,24 +3062,25 @@ function applyTranslations(text) {
 
 /* ====== 匯出／匯入 JSON 備份 ====== */
 
-document.getElementById('exportBtn').addEventListener('click', () => {
+function exportBackup() {
   const payload = {
     version: 1,
+    exportedAt: new Date().toISOString().slice(0, 10),
     imported: importedEntries,
     hidden: [...hidden],
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'claude-toolbook-backup.json';
+  a.href = url;
+  a.download = `skillsbook-backup-${payload.exportedAt}.json`;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(a.href);
-  snack('已匯出備份');
-});
-
-document.getElementById('importBtn').addEventListener('click', () => {
-  document.getElementById('importFile').click();
-});
+  a.remove();
+  /* 立刻 revoke 會讓部分瀏覽器取消下載，延後釋放 */
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  snack(`已匯出備份（${importedEntries.length} 個匯入項目）`);
+}
 
 document.getElementById('importFile').addEventListener('change', async (e) => {
   const file = e.target.files[0];
