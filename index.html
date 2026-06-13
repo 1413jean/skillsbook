@@ -923,6 +923,58 @@ body {
 .sync-path:active { transform: scale(0.96); }
 
 .sync-add-primary { font-size: 13.5px; font-weight: 600; padding: 9px 22px; }
+
+.sync-method {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 12px;
+}
+
+.sync-method-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.sync-method-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 99px;
+  padding: 2px 9px;
+}
+
+[data-theme="dark"] .sync-method-badge { color: #0b0b0b; }
+
+.sync-method-note {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-tertiary);
+  font-family: var(--font-mono);
+}
+
+.sync-method-desc {
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+
+.sync-method-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sync-method .sync-steps { margin: 6px 0 0; }
 </style>
 </head>
 <body>
@@ -2813,36 +2865,77 @@ function afterImport(count) {
   if (!currentChapter) renderToc(false);   /* 目錄頁開著的話即時更新計數 */
 }
 
-/* —— 同步來源 A：本機 PHP（有就自動掃）；來源 B：瀏覽器資料夾選取（預設流程）—— */
+/* —— 同步來源 A：本機 PHP（有就自動掃）；沒有就帶到教學（AI 代抓／自己選資料夾）—— */
 
-/* 沒有伺服器是大多數人的正常情況，不當錯誤處理，直接帶到圖文教學 */
+/* 給 Claude Code 的指令：掃描本機 skills/plugins，產生可匯入的備份檔 */
+function buildAiScanPrompt() {
+  return `請幫我掃描我安裝的 Claude Code Skills 與 MCP，產生一個 SkillsBook 可以匯入的備份檔。
+
+步驟：
+1. 列出 ~/.claude/skills/ 底下每個資料夾，讀取各自的 SKILL.md，取出 name 與 description
+2. 讀取 ~/.claude/plugins/installed_plugins.json，取出已安裝的 plugin 名稱
+3. 幫每一項寫一句精簡的「繁體中文」介紹
+4. 輸出成下面格式的 JSON，存成 ~/Downloads/skillsbook-backup.json
+
+JSON 格式（嚴格照欄位，不要多加說明文字）：
+{
+  "version": 1,
+  "imported": [
+    { "id": "<skill 資料夾名>", "type": "skill", "cat": "imported",
+      "en": "<skill 名稱>", "zh": "<繁中短名>",
+      "zhDesc": "<繁中一句介紹>", "enDesc": "<原始英文 description>",
+      "trigger": "/<skill 名稱>", "imported": true },
+    { "id": "imp-<plugin id>", "type": "mcp", "cat": "m-imported",
+      "en": "<plugin 名稱>", "zh": "<繁中短名>",
+      "zhDesc": "<繁中一句介紹>", "enDesc": "<英文一句介紹>",
+      "trigger": "對話中直接使用相關功能", "imported": true }
+  ],
+  "hidden": []
+}
+
+完成後告訴我檔案存在哪裡，我會用 SkillsBook 的「匯入備份」把它讀進來。`;
+}
+
+/* 沒有伺服器是大多數人的正常情況，不當錯誤處理，直接帶到教學 */
 function showFolderGuide(errMsg) {
-  if (!('showDirectoryPicker' in window)) {
-    syncBody.innerHTML = `
-      <p class="sync-loading">這個瀏覽器不支援資料夾選取</p>
-      <p class="sync-note">免伺服器同步需要 <b>Chrome</b> 或 <b>Edge</b>（Safari／Firefox 不支援）。
-      或者改用本機伺服器：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b>，再重新打開這個視窗就會自動掃描。</p>`;
-    return;
-  }
+  const supportsFS = 'showDirectoryPicker' in window;
   syncBody.innerHTML = `
-    ${errMsg ? `<p class="sync-loading" style="color:var(--danger);padding:0 0 8px">${esc(errMsg)}</p>` : ''}
-    <p class="sync-guide-lead">掃描你電腦上已安裝的 Skills 與 MCP，找出工具書還沒收錄的項目。<b>不需要伺服器</b>——瀏覽器只會讀取資料夾內容，不會修改任何檔案。</p>
-    <ol class="sync-steps">
-      <li>點下方「<b>選取 .claude 資料夾</b>」，會跳出系統的資料夾視窗</li>
-      <li>它是隱藏資料夾，直接輸入路徑最快：<br>
-          macOS — 按 <span class="sync-kbd">⌘</span><span class="sync-kbd">⇧</span><span class="sync-kbd">G</span> 後貼上
-          <button class="sync-path" id="copyPathMac">~/.claude</button>（點一下複製）再按 Enter<br>
-          Windows — 在視窗上方的路徑列貼上
-          <button class="sync-path" id="copyPathWin">%USERPROFILE%\\.claude</button></li>
-      <li>按「選取」，瀏覽器詢問權限時點「<b>檢視檔案</b>」允許讀取</li>
-    </ol>
-    <div style="text-align:center;margin-top:4px">
-      <button class="sync-add sync-add-primary" id="pickFolder">📂 選取 .claude 資料夾</button>
+    ${errMsg ? `<p class="sync-loading" style="color:var(--danger);padding:0 0 10px">${esc(errMsg)}</p>` : ''}
+    <p class="sync-guide-lead">找出你已安裝、但工具書還沒收錄的 Skills 與 MCP。挑一個方式就好：</p>
+
+    <div class="sync-method">
+      <div class="sync-method-title"><span class="sync-method-badge">最簡單</span>讓 AI 幫你抓</div>
+      <p class="sync-method-desc">不會用下面的資料夾操作？你已經在用 Claude Code 的話，把這段指令貼給它，它會自動掃描、寫好中文介紹，存成一個備份檔。再按「匯入備份」選那個檔就完成了。</p>
+      <div class="sync-method-actions">
+        <button class="sync-add sync-add-primary" id="copyAiPrompt">📋 複製 AI 指令</button>
+        <button class="sync-add" id="aiImport">📥 匯入備份</button>
+      </div>
     </div>
-    <p class="sync-note">進階：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b> 啟動本機伺服器的話，打開這個視窗會自動掃描，不用選資料夾。symlink 形式的 skill 資料夾選取讀不到，也請改用這個方式。</p>`;
-  syncBody.querySelector('#pickFolder').addEventListener('click', runFolderSync);
-  syncBody.querySelector('#copyPathMac').addEventListener('click', () => copyText('~/.claude', '已複製路徑'));
-  syncBody.querySelector('#copyPathWin').addEventListener('click', () => copyText('%USERPROFILE%\\.claude', '已複製路徑'));
+
+    <div class="sync-method">
+      <div class="sync-method-title">自己選資料夾<span class="sync-method-note">需 Chrome／Edge</span></div>
+      ${supportsFS ? `
+      <p class="sync-method-desc">瀏覽器直接讀取你的 <b>~/.claude</b> 資料夾，只讀不改。</p>
+      <ol class="sync-steps">
+        <li>點「選取 .claude 資料夾」，跳出系統視窗後前往隱藏資料夾：<br>
+            macOS 按 <span class="sync-kbd">⌘</span><span class="sync-kbd">⇧</span><span class="sync-kbd">G</span> 貼上
+            <button class="sync-path" id="copyPathMac">~/.claude</button>（點一下複製）<br>
+            Windows 在路徑列貼上 <button class="sync-path" id="copyPathWin">%USERPROFILE%\\.claude</button></li>
+        <li>按「選取」，瀏覽器問權限時點「<b>檢視檔案</b>」</li>
+      </ol>
+      <div class="sync-method-actions">
+        <button class="sync-add" id="pickFolder">📂 選取 .claude 資料夾</button>
+      </div>` : `
+      <p class="sync-method-desc">你的瀏覽器不支援資料夾選取（需要 Chrome／Edge）。請改用上面的 AI 方式。</p>`}
+    </div>
+
+    <p class="sync-note">進階：在專案資料夾執行 <b>php -S 127.0.0.1:4173</b> 啟動本機伺服器，打開這個視窗就會自動掃描，什麼都不用做。</p>`;
+
+  syncBody.querySelector('#copyAiPrompt').addEventListener('click', () => copyText(buildAiScanPrompt(), '已複製 AI 指令，貼給 Claude 即可'));
+  syncBody.querySelector('#aiImport').addEventListener('click', () => document.getElementById('importFile').click());
+  syncBody.querySelector('#pickFolder')?.addEventListener('click', runFolderSync);
+  syncBody.querySelector('#copyPathMac')?.addEventListener('click', () => copyText('~/.claude', '已複製路徑'));
+  syncBody.querySelector('#copyPathWin')?.addEventListener('click', () => copyText('%USERPROFILE%\\.claude', '已複製路徑'));
 }
 
 /* 用 File System Access API 掃描使用者選取的資料夾 */
