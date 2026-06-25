@@ -819,6 +819,34 @@ body {
 }
 .sync-ok-icon { font-size: 22px; }
 .sync-section { margin-bottom: 16px; }
+
+/* 最近更新（重用 sync-modal 外框，內文自有樣式） */
+.wn-intro {
+  font-size: 13px; color: var(--ink-secondary);
+  margin: 0 0 18px; line-height: 1.65;
+}
+.wn-group { margin-bottom: 18px; }
+.wn-group + .wn-group {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.wn-date {
+  font-size: 12px; font-weight: 600;
+  color: var(--ink-tertiary);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.wn-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.wn-item {
+  display: flex; gap: 9px; align-items: baseline;
+  font-size: 13.5px; color: var(--ink); line-height: 1.55;
+}
+.wn-tag {
+  flex-shrink: 0; font-size: 11px; font-weight: 600;
+  padding: 1px 8px; border-radius: 999px; line-height: 1.55;
+}
+.wn-add { color: var(--accent); background: var(--accent-soft); }
+.wn-upd { color: var(--mcp); background: var(--mcp-soft); }
 .sync-section-title {
   font-size: 11px;
   font-weight: 600;
@@ -1084,6 +1112,11 @@ const DATA = [
   zhDesc:'寫 code 之前先做結構化的設計訪談，產出一份設計簡報（design brief）：方向、限制、策略。適合在新功能動工前先對齊。',
   enDesc:'Plan UX/UI before writing code — runs a discovery interview and produces a design brief.',
   trigger:'「我們先規劃一下這個功能的設計」' },
+{ id:'design-kickoff', type:'skill', cat:'design', en:'design-kickoff', zh:'設計方向探索（個人）',
+  zhDesc:'幫設計師（尤其新手）為新功能「找方向」：把模糊需求釐清成問題定義 → 用 Mobbin 找真實 App 範例參考 → 收斂出建議的 flow／資訊架構／視覺方向 → 產出一份可帶走的方向文件（Direction Brief）。只管設計前期方向，不負責切版實作。',
+  enDesc:'Guide a designer to find direction for a new feature — clarify the problem, find real-world references on Mobbin, converge on flow/IA/visual direction, and produce a Direction Brief. Front-end direction only, not implementation.',
+  gain:'卡在「新功能不知道從哪開始」時，幫你從一句模糊需求一路帶到有憑有據的方向文件，還會自動撈 Mobbin 真實範例當參考，省掉自己亂找的時間。',
+  trigger:'「新功能不知道從哪開始／幫我找方向」' },
 { id:'critique', type:'skill', cat:'design', en:'critique', zh:'設計評論',
   zhDesc:'用 UX 視角評你的設計：視覺層級、資訊架構、情感共鳴、認知負荷，附量化評分與可執行的修改建議。會用 persona 模擬真實使用者走一遍。',
   enDesc:'Evaluate a design from a UX perspective with quantitative scoring, persona-based testing, and actionable feedback.',
@@ -1149,6 +1182,11 @@ const DATA = [
   zhDesc:'把雜亂的 Figma 元件／icon 文件頁整理成一致的 section + 卡片網格，像「Icon 24」那種文件風格。',
   enDesc:'Organize Figma component/icon documentation pages into a consistent section + card grid.',
   trigger:'「整理這頁 component／排得跟 Icon 24 一樣」' },
+{ id:'figma-docs-grid', type:'skill', cat:'design', en:'figma-docs-grid', zh:'Figma 文件網格整理', on:'Figma',
+  zhDesc:'把雜亂的 Figma 元件／icon／資產文件頁，整理成一致的 section + 卡片網格，複製「Icon 24」「Control」那種文件排版風格。與 lightbright-docs-grid 功能相同（為較新的命名版本）。',
+  enDesc:'Organize messy Figma component/icon/asset documentation pages into a consistent section + card grid, replicating the "Icon 24" / "Control" doc style. Same purpose as lightbright-docs-grid (newer naming).',
+  gain:'一頁散亂的元件／圖示，一句話就排成整齊的文件網格，不用自己一個個對齊間距、切 section。',
+  trigger:'「整理這頁 Figma 資產／make a documentation grid」' },
 { id:'jean-design-style', type:'skill', cat:'design', en:'jean-design-style', zh:'Jean 設計風格（個人）',
   zhDesc:'你的個人風格參考技能：任何視覺設計產出前都會先讀它，確保成果符合你偏好的方向。',
   enDesc:'Personal style reference — loaded before any visual design output to match Jean’s preferred direction.',
@@ -2194,10 +2232,11 @@ function renderToc(animate = true) {
     <h2 class="toc-part-title">附錄 · 工具 <span class="en">Appendix — Utilities</span></h2>
     <p class="toc-part-desc">管理這本工具書：同步你安裝的工具、備份與還原個人資料。</p>`;
   const actions = [
-    { num: 'i',   name: '同步檢查', sub: '掃描你安裝的 Skills 與 MCP', tag: 'scan',   fn: () => openSyncModal() },
-    { num: 'ii',  name: '匯出備份', sub: '下載匯入項目與隱藏設定',     tag: 'json ↓', fn: () => exportBackup() },
-    { num: 'iii', name: '匯入備份', sub: '從備份檔合併還原',           tag: 'json ↑', fn: () => document.getElementById('importFile').click() },
-    { num: 'iv',  name: '復原隱藏項目', sub: `目前隱藏 ${hidden.size} 項`, tag: `${hidden.size}`, fn: () => restoreHidden(), id: 'apxRestore', hide: hidden.size === 0 },
+    { num: 'i',   name: '最近更新', sub: '看看這本書最近加了什麼',     tag: 'new ✦', fn: () => openWhatsNew() },
+    { num: 'ii',  name: '同步檢查', sub: '掃描你安裝的 Skills 與 MCP', tag: 'scan',   fn: () => openSyncModal() },
+    { num: 'iii', name: '匯出備份', sub: '下載匯入項目與隱藏設定',     tag: 'json ↓', fn: () => exportBackup() },
+    { num: 'iv',  name: '匯入備份', sub: '從備份檔合併還原',           tag: 'json ↑', fn: () => document.getElementById('importFile').click() },
+    { num: 'v',   name: '復原隱藏項目', sub: `目前隱藏 ${hidden.size} 項`, tag: `${hidden.size}`, fn: () => restoreHidden(), id: 'apxRestore', hide: hidden.size === 0 },
   ];
   actions.forEach(a => {
     const row = document.createElement('button');
@@ -2856,6 +2895,35 @@ syncBackdrop.addEventListener('click', closeSyncModal);
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !syncModal.hidden) closeSyncModal();
 });
+
+/* —— 最近更新：這本工具書的更新紀錄（最新在上）—— */
+const CHANGELOG = [
+  { date: '2026-06-25', items: [
+    { t: 'add', d: '新增「最近更新」面板（就是你正在看的這頁）' },
+    { t: 'add', d: '收錄 5 個 Figma plugin 新 skill：新建 Figma 檔案、生成圖表（FigJam）、SwiftUI ↔ Figma 互轉、use_figma 的 FigJam 版與 Slides 版' },
+    { t: 'add', d: '收錄「設計方向探索」design-kickoff、「Figma 文件網格整理」figma-docs-grid' },
+    { t: 'upd', d: '更新 3 個 Figma skill 說明：generate-design 現在支援 modal／dialog／drawer、generate-library 連單一元件也走它、code-connect 支援 .figma.ts' },
+  ]},
+  { date: '2026-06-17', items: [
+    { t: 'add', d: '收錄 Framer 系列：framer（網站設計）、framer-code-components（程式元件）' },
+    { t: 'upd', d: 'README 改為中英雙語，可在頁面頂部一鍵切換語言' },
+  ]},
+];
+
+function buildWhatsNewHtml() {
+  const label = { add: '新增', upd: '更新' };
+  const groups = CHANGELOG.map(g => {
+    const items = g.items.map(it =>
+      `<li class="wn-item"><span class="wn-tag wn-${it.t === 'add' ? 'add' : 'upd'}">${label[it.t] || '更新'}</span><span>${it.d}</span></li>`
+    ).join('');
+    return `<div class="wn-group"><div class="wn-date">${g.date.replace(/-/g, ' / ')}</div><ul class="wn-list">${items}</ul></div>`;
+  }).join('');
+  return `<p class="wn-intro">這本工具書的更新紀錄——新增了哪些 skill、調整了哪些說明，都記在這裡。</p>${groups}`;
+}
+
+function openWhatsNew() {
+  openSheet('最近更新', buildWhatsNewHtml());
+}
 
 /* —— 匯入：把掃描到的項目轉成工具書詞條 —— */
 
